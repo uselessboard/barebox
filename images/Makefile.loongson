@@ -1,3 +1,7 @@
 pblb-$(CONFIG_BOARD_LOONGSON_TECH_LS1B) += start_loongson_ls1b
 FILE_barebox-loongson-ls1b.img = start_loongson_ls1b.pblb
 image-$(CONFIG_BOARD_LOONGSON_TECH_LS1B) += barebox-loongson-ls1b.img
+
+pblb-$(CONFIG_BOARD_LOONGSON1) += start_loongson1
+FILE_barebox-loongson1.img = start_loongson1.pblb
+image-$(CONFIG_BOARD_LOONGSON1) += barebox-loongson1.img
