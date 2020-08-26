@@ -11,6 +11,8 @@
 #include <asm/pbl_nmon.h>
 #include <linux/sizes.h>
 
+#include <mach/pbl_ll_init_loongson1.h>
+
 ENTRY_FUNCTION(BOARD_PBL_START)
 
 	mips_barebox_10h
@@ -21,5 +23,7 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 
 	debug_ll_outc '.'
 	debug_ll_ns16550_outnl
+
+	pbl_loongson1_ddr2_init
 
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
