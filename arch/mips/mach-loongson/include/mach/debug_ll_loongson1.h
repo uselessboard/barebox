@@ -8,9 +8,9 @@
 
 #include <mach/loongson1.h>
 
-#define DEBUG_LL_UART_ADDR	0
+#define DEBUG_LL_UART_ADDR	0xbfE48000
 
-#define DEBUG_LL_UART_SHIFT	2
+#define DEBUG_LL_UART_SHIFT	0
 
 #ifndef DEBUG_LL_UART_CLK
 #define DEBUG_LL_UART_CLK	(48000000 / 16)
