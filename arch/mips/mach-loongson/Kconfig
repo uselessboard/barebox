@@ -29,4 +29,42 @@ config BOARD_LOONGSON1
 
 endchoice
 
-endif
+if DEBUG_LL
+choice
+	prompt "DEBUG_LL driver"
+
+config DEBUG_LOONGSON1B_UART
+	bool "Loongson 1B Debug UART"
+
+config DEBUG_LOONGSON1C_UART
+	bool "Loongson 1C Debug UART"
+
+endchoice
+
+choice
+	prompt "DEBUG_LL port"
+
+config LOONGSON1_DEBUG_LL_UART0
+	depends on CPU_GS232
+	bool "UART0"
+
+config LOONGSON1_DEBUG_LL_UART1
+	depends on CPU_GS232
+	bool "UART1"
+
+config LOONGSON1_DEBUG_LL_UART2
+	depends on CPU_GS232
+	bool "UART2"
+
+config LOONGSON1_DEBUG_LL_UART3
+	depends on CPU_GS232
+	bool "UART3"
+
+config LOONGSON1_DEBUG_LL_UART4
+	depends on CPU_GS232
+	bool "UART4"
+
+endchoice
+endif # DEBUG_LL
+
+endif # MACH_MIPS_LOONGSON
