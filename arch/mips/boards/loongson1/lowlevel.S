@@ -12,6 +12,7 @@
 #include <linux/sizes.h>
 
 #include <mach/pbl_ll_init_loongson1.h>
+#include <mach/pbl_macros.h>
 
 ENTRY_FUNCTION(BOARD_PBL_START)
 
@@ -23,6 +24,8 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 
 	debug_ll_outc '.'
 	debug_ll_ns16550_outnl
+
+	pbl_loongson1_pll
 
 	pbl_loongson1_ddr2_init
 
