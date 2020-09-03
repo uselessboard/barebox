@@ -11,8 +11,8 @@
 #include <asm/pbl_nmon.h>
 #include <linux/sizes.h>
 
-#include <mach/pbl_ll_init_loongson1.h>
 #include <mach/pbl_macros.h>
+#include <mach/pbl_ll_init_loongson1.h>
 
 ENTRY_FUNCTION(BOARD_PBL_START)
 
@@ -21,6 +21,10 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	mips_disable_interrupts
 
 	debug_ll_ns16550_init
+
+	pbl_loongson1_calc_prescale 115200
+
+	/* write v0 to hardware */
 
 	debug_ll_outc '.'
 	debug_ll_ns16550_outnl
