@@ -20,16 +20,12 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 
 	mips_disable_interrupts
 
+	pbl_loongson1_pll
+	pbl_loongson1_uart_enable
+//	pbl_loongson1_calc_prescale 115200
 	debug_ll_ns16550_init
-
-	pbl_loongson1_calc_prescale 115200
-
-	/* write v0 to hardware */
-
 	debug_ll_outc '.'
 	debug_ll_ns16550_outnl
-
-	pbl_loongson1_pll
 
 	pbl_loongson1_ddr2_init
 

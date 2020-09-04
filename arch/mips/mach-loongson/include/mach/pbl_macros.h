@@ -192,10 +192,9 @@ pbl_loongson1_ram_generic_config:
 	.set	pop
 .endm
 
-#define GPIO_FUNC	((KSEG1 | AR71XX_GPIO_BASE) | AR71XX_GPIO_REG_FUNC)
-
+#define GPIOCFG1 0xbfd010C4
 .macro	pbl_loongson1_uart_enable
-	/* Set UART2_TX UART2_RX to Alt FUNC */
+	pbl_reg_clr 0xC00000, GPIOCFG1
 .endm
 
 .macro	pbl_loongson1_mdio_gpio_enable
