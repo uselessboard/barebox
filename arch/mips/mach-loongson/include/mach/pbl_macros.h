@@ -26,6 +26,25 @@
 	.set	pop
 .endm
 
+.macro set_cpu_window id, base, mask, mmap
+	.set	push
+	.set	noreorder
+
+        li      t0, 0xbfd00000
+        sw      $0, 0x80+\id*8(t0)
+        li      t1, \base
+        sw      t1, 0x00+\id*8(t0)
+        sw      $0, 0x04+\id*8(t0)
+        li      t1, \mask
+        sw      t1, 0x40+\id*8(t0)
+        sw      $0, 0x44+\id*8(t0)
+        li      t1, \mmap
+        sw      t1, 0x80+\id*8(t0)
+        sw      $0, 0x84+\id*8(t0)
+
+	.set	pop
+.endm
+
 #define DDR_BASE		(KSEG1 | AR71XX_DDR_CTRL_BASE)
 #define DDR_CONFIG		(DDR_BASE | AR933X_DDR_CONFIG)
 #define DDR_CONFIG2		(DDR_BASE | AR933X_DDR_CONFIG2)
