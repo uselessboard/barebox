@@ -152,7 +152,7 @@ same:
 #define CONFIG_BASE 0xaffffe00
 
 	.global ddr2_config
-	.ent    ddr2_config
+#	.ent    ddr2_config
 	.set    noreorder
 #	.set    mips32
 ddr2_config:
@@ -198,7 +198,7 @@ ddr2_config_start:
 1:
 	jr      ra
 	nop
-	.end    ddr2_config
+#	.end    ddr2_config
 
 //	.rdata
 	.align 5
