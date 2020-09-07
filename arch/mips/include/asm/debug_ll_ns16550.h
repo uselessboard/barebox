@@ -88,6 +88,7 @@ static inline void PUTC_LL(char ch)
 201:	lbu	t9, UART_LSR(t8)	/* get line status */
 	andi	t9, t9, UART_LSR_THRE	/* check for transmitter empty */
 	beqz	t9, 201b			/* try again */
+	nop
 
 	sb	a0, UART_THR(t8)	/* write the character */
 
