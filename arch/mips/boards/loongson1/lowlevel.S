@@ -17,12 +17,7 @@
 
 ################################################################
 
-#define tmpsize         s1
 #define msize           s2
-#define output_en       s3
-#define bonito          s4
-#define dbg             s5
-#define sdCfg           s6
 
 ################################################################
 
