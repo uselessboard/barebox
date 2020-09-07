@@ -85,9 +85,6 @@ loongson1b_war_1end:
 	 */
 	li	t0, 0xbfd010c8
 	li	t1, 0xfc000000
-#ifdef LS1ASOC
-	li	t1, 0x00000000
-#endif
 	sw	t1, (t0)
 	li	t0, 0xbfd010f8
 	li	t1, 0x14000000
@@ -102,25 +99,13 @@ loongson1b_war_1end:
 
 #ifdef CONFIG_DDR16BIT
 	/*16bit ddr and disable conf*/ 
-	#ifdef LS1ASOC
-		li a1, 0x3
-	#elif LS1BSOC
-		li a1, 0x110000
-	#endif
+	li a1, 0x110000
 #else
 	/*disable conf*/
-	#ifdef LS1ASOC
-		li a1, 0x2
-	#elif LS1BSOC
-		li a1, 0x100000
-	#endif
+	li a1, 0x100000
 #endif //#ifdef CONFIG_DDR16BIT
 
-#ifdef LS1ASOC
-	li a0, 0xbfd00420
-#elif LS1BSOC
 	li a0, 0xbfd00424
-#endif
 	lw a2, 0x0(a0)
 	or a2, a1
 	sw a2, 0x0(a0)
