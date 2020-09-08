@@ -125,7 +125,7 @@ same:
 	debug_ll_outc 'M'
 	debug_ll_outc 'O'
 	debug_ll_outc 'K'
-	b .
+	b	666f
 	nop
 
 # ----------------------------------
@@ -261,5 +261,5 @@ DDR2_CTL_28_DATA_HI: .word 0x00000000
 
 # ----------------------------------
 
-
+666:	nop
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
