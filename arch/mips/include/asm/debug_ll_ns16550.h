@@ -83,13 +83,13 @@ static inline void PUTC_LL(char ch)
 	.set	push
 	.set	reorder
 
-	la	t0, DEBUG_LL_UART_ADDR
+	la	t8, DEBUG_LL_UART_ADDR
 
-201:	lbu	t1, UART_LSR(t0)	/* get line status */
-	andi	t1, t1, UART_LSR_THRE	/* check for transmitter empty */
-	beqz	t1, 201b			/* try again */
+201:	lbu	t9, UART_LSR(t8)	/* get line status */
+	andi	t9, t9, UART_LSR_THRE	/* check for transmitter empty */
+	beqz	t9, 201b			/* try again */
 
-	sb	a0, UART_THR(t0)	/* write the character */
+	sb	a0, UART_THR(t8)	/* write the character */
 
 	.set	pop
 #endif /* CONFIG_DEBUG_LL */
