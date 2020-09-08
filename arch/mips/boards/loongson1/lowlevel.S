@@ -161,11 +161,7 @@ ddr2_config_start:
 	move	s0, zero
     addu    t0, t0, s0
 10:    
-    lw      a1, 0x0(t0)
-    sw      a1, 0x34(t2)
-    lw      a1, 0x0(t0)
-    ori     a1, 0x0100
-    sw      a1, 0x34(t2)
+	pbl_reg_writel  0x01010100, 0xaffffe34
 
 9: //not_locked
 	ld      a1, 0x10(t2)
