@@ -157,6 +157,7 @@ same:
 #	.set    mips32
 ddr2_config:
     la      t0, ddr2_reg_data
+	move	s0, zero
     addu    t0, t0, s0
     li      t1, 0x1d
     li      t2, CONFIG_BASE
@@ -173,6 +174,7 @@ reg_write:
 ddr2_config_start:
     li      t2, CONFIG_BASE
     la      t0, DDR2_CTL_03_DATA_HI
+	move	s0, zero
     addu    t0, t0, s0
 10:    
     lw      a1, 0x0(t0)
