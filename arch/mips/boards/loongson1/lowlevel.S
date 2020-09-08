@@ -78,12 +78,9 @@ loongson1b_war_1end:
 	 * *_tsel参数用于配置DDR IO的ODT输入匹配阻抗 00: disable 01: 75ohm 10: 150ohm 11: 50ohm
 	 * pad_st不用于SSTL18模式，应保持为0
 	 */
-	li	t0, 0xbfd010c8
-	li	t1, 0xfc000000
-	sw	t1, (t0)
-	li	t0, 0xbfd010f8
-	li	t1, 0x14000000
-	sw	t1, (t0)
+
+	pbl_reg_writel 0xfc000000, 0xbfd010c8
+	pbl_reg_writel 0x14000000, 0xbfd010f8
 
 	/* DDR2 config begin */
 	bal     ddr2_config
@@ -94,16 +91,12 @@ loongson1b_war_1end:
 
 #ifdef CONFIG_DDR16BIT
 	/*16bit ddr and disable conf*/ 
-	li a1, 0x110000
+	pbl_reg_set 0x110000, 0xbfd00424
 #else
 	/*disable conf*/
-	li a1, 0x100000
+	pbl_reg_set 0x100000, 0xbfd00424
 #endif //#ifdef CONFIG_DDR16BIT
 
-	li a0, 0xbfd00424
-	lw a2, 0x0(a0)
-	or a2, a1
-	sw a2, 0x0(a0)
 #endif
 
 ################################################################################
