@@ -116,20 +116,11 @@ loongson1b_war_1end:
 
 	li t0, 0xa0080000
 	li a0, 0xdeadbeef
-	debug_ll_outc 'a'
-	nop
-	nop
-	nop
-	nop
-	nop
 	nop
 	sw a0, 0 (t0)
-	debug_ll_outc 'b'
 	lw a1, 0 (t0)
-	debug_ll_outc 'c'
 	beq a0, a1, same
 	 nop
-	debug_ll_outc 'x'
 
 diff:
 	debug_ll_outc 'X'
