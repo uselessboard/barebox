@@ -14,13 +14,6 @@
 #include <mach/pbl_macros.h>
 #include <mach/pbl_ll_init_loongson1.h>
 
-
-################################################################
-
-#define msize           s2
-
-################################################################
-
 ENTRY_FUNCTION(BOARD_PBL_START)
 
 	mips_barebox_10h
@@ -58,99 +51,20 @@ loongson1b_war_1end:
 
 	debug_ll_outc '2'
 
-//	pbl_loongson1_ddr2_init
-
-# ----------------------------------
-# "war_ddr1.S"
-# ----------------------------------
-#define LS1BSOC         1
-#define MEM_SIZE        (64*1024*1024)
 #define CONFIG_DDR16BIT 1
 
 #undef  EIGHT_BANK_MODE
 ################################################################################
-
-	/* 配置内存 */
-#if defined(LS1ASOC) || defined(LS1BSOC)
-	/*
-	 * set *_ssel and *_tsel
-	 * *_ssel参数用于配置DDR IO的驱动强度 01: 弱驱动 11: 强驱动
-	 * *_tsel参数用于配置DDR IO的ODT输入匹配阻抗 00: disable 01: 75ohm 10: 150ohm 11: 50ohm
-	 * pad_st不用于SSTL18模式，应保持为0
-	 */
-
 	pbl_reg_writel 0xfc000000, 0xbfd010c8
 	pbl_reg_writel 0x14000000, 0xbfd010f8
 
-	/* DDR2 config begin */
-	bal     ddr2_config
-	nop
-
-	/* memory size defined in conf */
-	li msize, MEM_SIZE
-
-#ifdef CONFIG_DDR16BIT
-	/*16bit ddr and disable conf*/ 
-	pbl_reg_set 0x110000, 0xbfd00424
-#else
-	/*disable conf*/
-	pbl_reg_set 0x100000, 0xbfd00424
-#endif //#ifdef CONFIG_DDR16BIT
-
-#endif
-
-################################################################################
-
-
-# ----------------------------------
-
-	debug_ll_outc '3'
-	debug_ll_outc '4'
-
-	li t0, 0xa0080000
-	li a0, 0xdeadbeef
-	nop
-	sw a0, 0 (t0)
-	lw a1, 0 (t0)
-	beq a0, a1, same
-	 nop
-
-diff:
-	debug_ll_outc 'X'
-	b .
-	nop
-same:
-	debug_ll_outc 'R'
-	debug_ll_outc 'A'
-	debug_ll_outc 'M'
-	debug_ll_outc 'O'
-	debug_ll_outc 'K'
-	b	666f
-	nop
-
-# ----------------------------------
-# "ddr2fconfig-samsung-CL3.S"
-# ----------------------------------
-
-#define REG_ADDRESS 0x0
 #define CONFIG_BASE 0xaffffe00
-
-	.global ddr2_config
-#	.ent    ddr2_config
-	.set    noreorder
-#	.set    mips32
-ddr2_config:
-/* this is not real init ddr2 controller
-   only write 29 * 2 registers */
 	pbl_loongson1_ddr2_init
-
-    ############start##########
-ddr2_config_start:
-    li      t2, CONFIG_BASE
 10:
 	pbl_reg_writel  0x01010100, 0xaffffe34
 
 9: //not_locked
+	li	t2, 0xaffffe00
 	ld      a1, 0x10(t2)
 	andi    a1, 0x01
 	beqz    a1, 9b
@@ -165,14 +79,13 @@ ddr2_config_start:
 	b       10b
 	nop
 1:
-	jr      ra
-	nop
-#	.end    ddr2_config
 
-//	.rdata
-	.align 5
+#ifdef CONFIG_DDR16BIT
+	/*16bit ddr and disable conf*/
+	pbl_reg_set 0x110000, 0xbfd00424
+#else
+	/*disable conf*/
+	pbl_reg_set 0x100000, 0xbfd00424
+#endif //#ifdef CONFIG_DDR16BIT
 
-# ----------------------------------
-
-666:	nop
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
