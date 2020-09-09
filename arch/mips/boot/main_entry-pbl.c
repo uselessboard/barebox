@@ -31,6 +31,7 @@ static void barebox_uncompress(void *compressed_start, unsigned int len)
 	ttb = (void *)((free_mem_ptr - 0x4000) & ~0x3fff);
 
 	pbl_barebox_uncompress((void*)TEXT_BASE, compressed_start, len);
+	puts_ll("I am back level 2\n");
 }
 
 void __section(.text_entry) pbl_main_entry(void *fdt, void *fdt_end,
@@ -51,9 +52,13 @@ void __section(.text_entry) pbl_main_entry(void *fdt, void *fdt_end,
 
 	barebox_uncompress(&input_data, pg_len);
 
+	puts_ll("222\n");
+
 	fdt_len = (u32)fdt_end - (u32)fdt;
 	fdt_new = (void *)PAGE_ALIGN_DOWN(TEXT_BASE - MALLOC_SIZE - STACK_SIZE - fdt_len);
 	memcpy(fdt_new, fdt, fdt_len);
+
+	puts_ll("pbl_main_entry() 58\n");
 
 	barebox = (void *)TEXT_BASE;
 	barebox(fdt_new, fdt_len, ram_size);

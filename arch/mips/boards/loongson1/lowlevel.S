@@ -35,6 +35,9 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	debug_ll_outc '2'
 
 	pbl_loongson1_ddr2_init
+	pbl_probe_mem t0, t1, KSEG1
+	bne	t0, t1, .
+	nop
 	debug_ll_outc '3'
 
 	debug_ll_ns16550_outnl
