@@ -14,6 +14,10 @@
 #include <mach/pbl_macros.h>
 #include <mach/pbl_ll_init_loongson1.h>
 
+#define CONFIG_DDR16BIT 1
+
+#undef  EIGHT_BANK_MODE
+
 ENTRY_FUNCTION(BOARD_PBL_START)
 
 	mips_barebox_10h
@@ -29,7 +33,7 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	debug_ll_ns16550_outnl
 	debug_ll_outc '1'
 
-loongson1b_war_1:
+pbl_loongson1_remap:
 	set_cpu_window 0, 0x1c300000, 0xfff00000, 0x1c3000d2 // dc        1M must cachable
 	set_cpu_window 1, 0x1fe10000, 0xffffe000, 0x1fe100d3 // gmac0     8K
 	set_cpu_window 2, 0x1fe20000, 0xffffe000, 0x1fe200d3 // gmac1     8K
@@ -39,22 +43,19 @@ loongson1b_war_1:
 	set_cpu_window 6, 0x1f000000, 0xff000000, 0x1f0000d3 // AXIMUX    16M
 	set_cpu_window 7, 0x00000000, 0x00000000, 0x000000f0 // ddr       0
 	li	t0, 0xbfd000e0
-	lw	t1, 0x0(t0)	//0xbfd000e0
-	and t1, t1, 0xffffff00
-	ori	t1, 0xd0
-	sw	t1, 0x0(t0)
-	lw	t1, 0x8(t0)	//0xbfd000e8
-	and t1, t1, 0xffffff00
-	ori	t1, 0xd0
-	sw	t1, 0x8(t0)
-loongson1b_war_1end:
+	lw	t1, 0x0 (t0)	//0xbfd000e0
+	and	t1, t1, 0xffffff00
+	ori	t1, t1, 0xd0
+	sw	t1, 0x0 (t0)
+
+	lw	t1, 0x8 (t0)	//0xbfd000e8
+	and	t1, t1, 0xffffff00
+	ori	t1, t1, 0xd0
+	sw	t1, 0x8 (t0)
 
 	debug_ll_outc '2'
 
-#define CONFIG_DDR16BIT 1
-
-#undef  EIGHT_BANK_MODE
-################################################################################
+	/* initial ddr2 controller */
 	pbl_reg_writel 0xfc000000, 0xbfd010c8
 	pbl_reg_writel 0x14000000, 0xbfd010f8
 
@@ -64,18 +65,20 @@ loongson1b_war_1end:
 	pbl_reg_writel  0x01010100, 0xaffffe34
 
 9: //not_locked
-	li	t2, 0xaffffe00
-	ld      a1, 0x10(t2)
-	andi    a1, 0x01
-	beqz    a1, 9b
+	li	t0, 0xaffffe00
+	lw      t1, 0x10 (t0)
+	andi    t1, t1, 1
+	beqz    t1, 9b
 	nop
-	lh      a1, 0xf2(t2)
-	sltiu 	a1, 5
-	beqz 	a1, 1f
+
+	lh      t1, 0xf2 (t0)
+	sltiu 	t1, t1, 5
+	beqz 	t1, 1f
 	nop
-	lw      a1, 0xf4(t2)
-	addiu   a1, 4
-	sw      a1, 0xf4(t2)
+
+	lw      t1, 0xf4 (t0)
+	addiu   t1, t1, 4
+	sw      t1, 0xf4 (t0)
 	b       10b
 	nop
 1:
@@ -87,5 +90,9 @@ loongson1b_war_1end:
 	/*disable conf*/
 	pbl_reg_set 0x100000, 0xbfd00424
 #endif //#ifdef CONFIG_DDR16BIT
+
+	debug_ll_outc '3'
+
+	debug_ll_ns16550_outnl
 
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
