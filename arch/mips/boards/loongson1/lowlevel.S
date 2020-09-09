@@ -40,6 +40,10 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	nop
 	debug_ll_outc '3'
 
+	mips_cache_reset
+	dcache_enable
+	debug_ll_outc '4'
+
 	debug_ll_ns16550_outnl
 
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
