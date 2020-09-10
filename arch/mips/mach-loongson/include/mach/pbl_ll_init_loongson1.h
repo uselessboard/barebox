@@ -110,7 +110,7 @@ mflo v0
 	pbl_reg_writel 0x00000000, 0xAFFFFFB0
 	pbl_reg_writel 0x00000000, 0xAFFFFFB4
 	pbl_reg_writel 0x00000000, 0xAFFFFFC0
-	pbl_reg_writel 0x00000000, 0xAFFFFFC4	
+	pbl_reg_writel 0x00000000, 0xAFFFFFC4
 
 	.set	pop
 .endm
@@ -118,10 +118,6 @@ mflo v0
 .macro	pbl_loongson1_ddr2_init
 	.set	push
 	.set	noreorder
-
-#define CONFIG_BASE 0xaffffe00
-#define CONFIG_DDR16BIT 1
-#undef  EIGHT_BANK_MODE
 
 	/* initial ddr2 controller */
 	pbl_reg_writel 0xfc000000, 0xbfd010c8
@@ -131,7 +127,7 @@ mflo v0
 10:
 	pbl_reg_writel  0x01010100, 0xaffffe34
 
-9: //not_locked
+9:	/* not_locked */
 	li	t0, 0xaffffe00
 	lw      t1, 0x10 (t0)
 	andi    t1, t1, 1
@@ -149,15 +145,8 @@ mflo v0
 	b       10b
 	nop
 1:
-
-#ifdef CONFIG_DDR16BIT
 	/*16bit ddr and disable conf*/
 	pbl_reg_set 0x110000, 0xbfd00424
-#else
-	/*disable conf*/
-	pbl_reg_set 0x100000, 0xbfd00424
-#endif //#ifdef CONFIG_DDR16BIT
-
 	.set	pop
 .endm
 
