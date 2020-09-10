@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2014 Antony Pavlov <antonynpavlov@gmail.com>
+ * Copyright (C) 2020 Du Huanpeng <duhuanpegn@gmail.com>
  */
 
 #define BOARD_PBL_START start_loongson1
