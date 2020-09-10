@@ -22,6 +22,8 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 
 	mips_disable_interrupts
 
+	pbl_blt 0xbf000000 168f t0
+
 	pbl_loongson1_pll
 
 	pbl_loongson1_uart_enable
@@ -45,6 +47,8 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	dcache_enable
 	debug_ll_outc '4'
 
+168:
+	debug_ll_outc '5'
 	debug_ll_ns16550_outnl
 
 ENTRY_FUNCTION_END(BOARD_PBL_START, loongson1, SZ_64M)
