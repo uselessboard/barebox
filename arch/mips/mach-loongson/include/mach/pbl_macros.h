@@ -1,27 +1,26 @@
-#ifndef __ASM_MACH_ATH79_PBL_MACROS_H
-#define __ASM_MACH_ATH79_PBL_MACROS_H
+#ifndef __ASM_MACH_LOONGSON1_PBL_MACROS_H
+#define __ASM_MACH_LOONGSON1_PBL_MACROS_H
 
 #include <asm/addrspace.h>
 #include <asm/regdef.h>
 #include <mach/loongson1.h>
 
-#define PLL_FREQ       0xBFE78030
-#define PLL_DIV_PARAM  0xBFE78034
+#define PLL_FREQ		0xBFE78030
+#define PLL_DIV_PARAM		0xBFE78034
 
-#define CONFIG_CPU_DIV 3
-#define CONFIG_DDR_DIV 4
-#define CONFIG_DC_DIV  4
-
-#define CONFIG_PLL_FREQ       0x1C
-#define CONFIG_PLL_DIV_PARAM  0x92392a00
+#define CONFIG_CPU_DIV		3
+#define CONFIG_DDR_DIV		4
+#define CONFIG_DC_DIV		4
+#define CONFIG_PLL_FREQ		0x1C
+#define CONFIG_PLL_DIV_PARAM	0x92392a00
 
 .macro	pbl_loongson1_pll
 	.set	push
 	.set	noreorder
 
 	pbl_reg_writel 0x92392a00, PLL_DIV_PARAM
-	pbl_reg_writel 0x1c, PLL_FREQ
-	pbl_sleep  t2, 40
+	pbl_reg_writel 0x0000001c, PLL_FREQ
+	pbl_sleep  t8, 40
 
 	.set	pop
 .endm
@@ -30,351 +29,67 @@
 	.set	push
 	.set	noreorder
 
-        li      t0, 0xbfd00000
-        sw      $0, 0x80+\id*8(t0)
-        li      t1, \base
-        sw      t1, 0x00+\id*8(t0)
-        sw      $0, 0x04+\id*8(t0)
-        li      t1, \mask
-        sw      t1, 0x40+\id*8(t0)
-        sw      $0, 0x44+\id*8(t0)
-        li      t1, \mmap
-        sw      t1, 0x80+\id*8(t0)
-        sw      $0, 0x84+\id*8(t0)
+        li      t8, 0xbfd00000
+        sw      $0, 0x80 + \id * 8 (t8)
+        li      t9, \base
+        sw      t9, 0x00 + \id * 8 (t8)
+        sw      $0, 0x04 + \id * 8 (t8)
+        li      t9, \mask
+        sw      t9, 0x40 + \id * 8 (t8)
+        sw      $0, 0x44 + \id * 8 (t8)
+        li      t9, \mmap
+        sw      t9, 0x80 + \id * 8 (t8)
+        sw      $0, 0x84 + \id * 8 (t8)
 
 	.set	pop
 .endm
 
-#if 2333
 .macro pbl_loongson1_remap
 	.set	push
 
-        set_cpu_window 0, 0x1c300000, 0xfff00000, 0x1c3000d2 // dc        1M must cachable
-        set_cpu_window 1, 0x1fe10000, 0xffffe000, 0x1fe100d3 // gmac0     8K
-        set_cpu_window 2, 0x1fe20000, 0xffffe000, 0x1fe200d3 // gmac1     8K
-        set_cpu_window 3, 0x1fe10000, 0xffff0000, 0x1fe100d0 // gmac0     64K
-        set_cpu_window 4, 0x1fe20000, 0xffff0000, 0x1fe200d0 // gmac1     64K
-        set_cpu_window 5, 0x1ff00000, 0xfff00000, 0x1ff000d0 // reserved  1M
-        set_cpu_window 6, 0x1f000000, 0xff000000, 0x1f0000d3 // AXIMUX    16M
-        set_cpu_window 7, 0x00000000, 0x00000000, 0x000000f0 // ddr       0
-        li      t0, 0xbfd000e0
-        lw      t1, 0x0 (t0)    //0xbfd000e0
-        and     t1, t1, 0xffffff00
-        ori     t1, t1, 0xd0
-        sw      t1, 0x0 (t0)
+        set_cpu_window 0, 0x1c300000, 0xfff00000, 0x1c3000d2
+        set_cpu_window 1, 0x1fe10000, 0xffffe000, 0x1fe100d3
+        set_cpu_window 2, 0x1fe20000, 0xffffe000, 0x1fe200d3
+        set_cpu_window 3, 0x1fe10000, 0xffff0000, 0x1fe100d0
+        set_cpu_window 4, 0x1fe20000, 0xffff0000, 0x1fe200d0
+        set_cpu_window 5, 0x1ff00000, 0xfff00000, 0x1ff000d0
+        set_cpu_window 6, 0x1f000000, 0xff000000, 0x1f0000d3
+        set_cpu_window 7, 0x00000000, 0x00000000, 0x000000f0
+        li	t8, 0xbfd000e0
+        lw	t9, 0x0 (t8)
+        and	t9, t9, 0xffffff00
+        ori	t9, t9, 0xd0
+        sw	t9, 0x0 (t8)
 
-        lw      t1, 0x8 (t0)    //0xbfd000e8
-        and     t1, t1, 0xffffff00
-        ori     t1, t1, 0xd0
-        sw      t1, 0x8 (t0)
-
-	.set	pop
-.endm
-#endif
-
-#define DDR_BASE		(KSEG1 | AR71XX_DDR_CTRL_BASE)
-#define DDR_CONFIG		(DDR_BASE | AR933X_DDR_CONFIG)
-#define DDR_CONFIG2		(DDR_BASE | AR933X_DDR_CONFIG2)
-#define DDR_MODE		(DDR_BASE | AR933X_DDR_MODE)
-#define DDR_EXT_MODE		(DDR_BASE | AR933X_DDR_EXT_MODE)
-
-#define DDR_CTRL		(DDR_BASE | AR933X_DDR_CTRL)
-/* Forces an EMR3S (Extended Mode Register 3 Set) update cycle */
-#define DDR_CTRL_EMR3		BIT(5)
-/* Forces an EMR2S (Extended Mode Register 2 Set) update cycle */
-#define DDR_CTRL_EMR2		BIT(4)
-#define DDR_CTRL_PREA		BIT(3) /* Forces a PRECHARGE ALL cycle */
-#define DDR_CTRL_REF		BIT(2) /* Forces an AUTO REFRESH cycle */
-/* Forces an EMRS (Extended Mode Register 2 Set) update cycle */
-#define DDR_CTRL_EMRS		BIT(1)
-/* Forces a MRS (Mode Register Set) update cycle */
-#define DDR_CTRL_MRS		BIT(0)
-
-#define DDR_REFRESH		(DDR_BASE | AR933X_DDR_REFRESH)
-#define DDR_RD_DATA		(DDR_BASE | AR933X_DDR_RD_DATA)
-#define DDR_TAP_CTRL0		(DDR_BASE | AR933X_DDR_TAP_CTRL0)
-#define DDR_TAP_CTRL1		(DDR_BASE | AR933X_DDR_TAP_CTRL1)
-
-#define DDR_DDR2_CONFIG		(DDR_BASE | AR933X_DDR_DDR_DDR2_CONFIG)
-#define DDR_EMR2		(DDR_BASE | AR933X_DDR_DDR_EMR2)
-#define DDR_EMR3		(DDR_BASE | AR933X_DDR_DDR_EMR3)
-
-.macro	pbl_loongson1_ddr1_config
-	.set	push
-	.set	noreorder
-
-	pbl_reg_writel	0x7fbc8cd0, DDR_CONFIG
-	pbl_reg_writel	0x9dd0e6a8, DDR_CONFIG2
-
-	pbl_reg_writel	DDR_CTRL_PREA, DDR_CTRL
-
-	/* 0x133: on reset Mode Register value */
-	pbl_reg_writel	0x133, DDR_MODE
-	pbl_reg_writel	DDR_CTRL_MRS, DDR_CTRL
-
-	/*
-	 * DDR_EXT_MODE[1] = 1: Reduced Drive Strength
-	 * DDR_EXT_MODE[0] = 0: Enable DLL
-	 */
-	pbl_reg_writel	0x2, DDR_EXT_MODE
-	pbl_reg_writel	DDR_CTRL_EMRS, DDR_CTRL
-
-	pbl_reg_writel	DDR_CTRL_PREA, DDR_CTRL
-
-	/* DLL out of reset, CAS Latency 3 */
-	pbl_reg_writel	0x33, DDR_MODE
-	pbl_reg_writel	DDR_CTRL_MRS, DDR_CTRL
-
-	/* Refresh control. Bit 14 is enable. Bits<13:0> Refresh time */
-	pbl_reg_writel	0x4186, DDR_REFRESH
-	/* This register is used along with DQ Lane 0; DQ[7:0], DQS_0 */
-	pbl_reg_writel	0x8, DDR_TAP_CTRL0
-	/* This register is used along with DQ Lane 1; DQ[15:8], DQS_1 */
-	pbl_reg_writel	0x9, DDR_TAP_CTRL1
-
-	/*
-	 * DDR read and capture bit mask.
-	 * Each bit represents a cycle of valid data.
-	 * 0xff: use 16-bit DDR
-	 */
-	pbl_reg_writel	0xff, DDR_RD_DATA
+        lw	t9, 0x8 (t8)
+        and	t9, t9, 0xffffff00
+        ori	t9, t9, 0xd0
+        sw	t9, 0x8 (t8)
 
 	.set	pop
 .endm
 
-.macro	pbl_loongson1_ddr2_config
-	.set	push
-	.set	noreorder
-
-	pbl_reg_writel	0x7fbc8cd0, DDR_CONFIG
-	pbl_reg_writel	0x9dd0e6a8, DDR_CONFIG2
-
-	/* Enable DDR2 */
-	pbl_reg_writel	0x00000a59, DDR_DDR2_CONFIG
-	pbl_reg_writel	DDR_CTRL_PREA, DDR_CTRL
-
-	/* Disable High Temperature Self-Refresh Rate */
-	pbl_reg_writel	0x00000000, DDR_EMR2
-	pbl_reg_writel	DDR_CTRL_EMR2, DDR_CTRL
-
-	pbl_reg_writel	0x00000000, DDR_EMR3
-	pbl_reg_writel	DDR_CTRL_EMR3, DDR_CTRL
-
-	/* Enable DLL */
-	pbl_reg_writel	0x00000000, DDR_EXT_MODE
-	pbl_reg_writel	DDR_CTRL_EMRS, DDR_CTRL
-
-	/* Reset DLL */
-	pbl_reg_writel	0x00000100, DDR_MODE
-	pbl_reg_writel	DDR_CTRL_MRS, DDR_CTRL
-
-	pbl_reg_writel	DDR_CTRL_PREA, DDR_CTRL
-	pbl_reg_writel	DDR_CTRL_REF, DDR_CTRL
-	pbl_reg_writel	DDR_CTRL_REF, DDR_CTRL
-
-	/* Write recovery (WR) 6 clock, CAS Latency 3, Burst Length 8 */
-	pbl_reg_writel	0x00000a33, DDR_MODE
-	pbl_reg_writel	DDR_CTRL_MRS, DDR_CTRL
-
-	/*
-	 * DDR_EXT_MODE[9:7] = 0x7: (OCD Calibration defaults)
-	 * DDR_EXT_MODE[1] = 1: Reduced Drive Strength
-	 * DDR_EXT_MODE[0] = 0: Enable DLL
-	 */
-	pbl_reg_writel	0x00000382, DDR_EXT_MODE
-	pbl_reg_writel	DDR_CTRL_EMRS, DDR_CTRL
-
-	/*
-	 * DDR_EXT_MODE[9:7] = 0x0: (OCD exit)
-	 * DDR_EXT_MODE[1] = 1: Reduced Drive Strength
-	 * DDR_EXT_MODE[0] = 0: Enable DLL
-	 */
-	pbl_reg_writel	0x00000402, DDR_EXT_MODE
-	pbl_reg_writel	DDR_CTRL_EMRS, DDR_CTRL
-
-	/* Refresh control. Bit 14 is enable. Bits <13:0> Refresh time */
-	pbl_reg_writel	0x00004186, DDR_REFRESH
-	/* DQS 0 Tap Control (needs tuning) */
-	pbl_reg_writel	0x00000008, DDR_TAP_CTRL0
-	/* DQS 1 Tap Control (needs tuning) */
-	pbl_reg_writel	0x00000009, DDR_TAP_CTRL1
-	/* For 16-bit DDR */
-	pbl_reg_writel	0x000000ff, DDR_RD_DATA
-
-	.set	pop
-.endm
-
-#define RESET_REG_BOOTSTRAP	((KSEG1 | AR71XX_RESET_BASE) \
-					| AR933X_RESET_REG_BOOTSTRAP)
-
-.macro	pbl_loongson1_ram_generic_config
-	.set	push
-	.set	noreorder
-
-	li	t5,	RESET_REG_BOOTSTRAP
-	/* Documentation and source code of existing boot loaders disagree at
-	 * this place. Doc says: MEM_TYPE[13:12]:
-	 * - 00 = SDRAM
-	 * - 01 = DDR1
-	 * - 10 = DDR2
-	 * The source code of most loaders do not care about BIT(12). So we do
-	 * the same.
-	 */
-	li	t6,	AR933X_BOOTSTRAP_MEM_TYPE
-	lw	t7,	0(t5);
-	and	t6,	t7,	t6
-	beq	zero,	t6,	pbl_loongson1_ram_generic_ddr1
-	nop
-
-pbl_loongson1_ram_generic_ddr2:
-	pbl_loongson1_ddr2_config
-	b	pbl_loongson1_ram_generic_config
-	nop
-
-pbl_loongson1_ram_generic_ddr1:
-	pbl_loongson1_ddr1_config
-
-pbl_loongson1_ram_generic_config:
-	.set	pop
-.endm
-
-#define GPIOCFG1 0xbfd010C4
+#define GPIOCFG1	0xbfd010C4
 .macro	pbl_loongson1_uart_enable
-	pbl_reg_clr 0xC00000, GPIOCFG1
+	pbl_reg_clr 0x00C00000, GPIOCFG1
 .endm
 
 .macro	pbl_loongson1_mdio_gpio_enable
-	/* Bit 18 enables MDC and MDIO function on GPIO26 and GPIO28 */
+	/* TODO: */
 .endm
 
-.macro	hornet_mips24k_cp0_setup
+.macro	loongson1_gs232_cp0_setup
 	.set push
 	.set noreorder
-
-	/*
-	 * Clearing CP0 registers - This is generally required for the MIPS-24k
-	 * core used by Atheros.
-	 */
-	mtc0	zero, CP0_INDEX
-	mtc0	zero, CP0_ENTRYLO0
-	mtc0	zero, CP0_ENTRYLO1
-	mtc0	zero, CP0_CONTEXT
-	mtc0	zero, CP0_PAGEMASK
-	mtc0	zero, CP0_WIRED
-	mtc0	zero, CP0_INFO
-	mtc0	zero, CP0_COUNT
-	mtc0	zero, CP0_ENTRYHI
-	mtc0	zero, CP0_COMPARE
-
-	li	t0, ST0_CU0 | ST0_ERL
-	mtc0	t0, CP0_STATUS
-
-	mtc0	zero, CP0_CAUSE
-	mtc0	zero, CP0_EPC
-
-	li	t0, CONF_CM_UNCACHED
-	mtc0	t0, CP0_CONFIG
-
-	mtc0	zero, CP0_LLADDR
-	mtc0	zero, CP0_WATCHLO
-	mtc0	zero, CP0_WATCHHI
-	mtc0	zero, CP0_XCONTEXT
-	mtc0	zero, CP0_FRAMEMASK
-	mtc0	zero, CP0_DIAGNOSTIC
-	mtc0	zero, CP0_DEBUG
-	mtc0	zero, CP0_DEPC
-	mtc0	zero, CP0_PERFORMANCE
-	mtc0	zero, CP0_ECC
-	mtc0	zero, CP0_CACHEERR
-	mtc0	zero, CP0_TAGLO
-
-	.set	pop
-.endm
-
-.macro	hornet_1_1_war
-	.set push
-	.set noreorder
-
-	/* nothing here. */
-do_reset:
-
-do_reset_loop:
-	b   do_reset_loop
-	 nop
-
-normal_path:
+	/* TODO: */
 	.set	pop
 .endm
 
 .macro	pbl_loongson1_wmac_enable
 	.set push
 	.set noreorder
-
-	/* These three WLAN_RESET will avoid original issue */
-
-	/* RTC Force Wake */
-
-	/* RTC Reset */
-
-	/* Wait for RTC in on state */
-1:
-	beqz    t1, 1b
-	nop
-
+	/* TODO: */
 	.set	pop
 .endm
 
-	.macro	loongson1_pbl_generic_start
-	.set	push
-	.set	noreorder
-
-	mips_barebox_10h
-
-	pbl_blt 0xbf000000 skip_pll_ram_config t8
-
-	hornet_mips24k_cp0_setup
-
-	pbl_loongson1_wmac_enable
-
-	hornet_1_1_war
-
-	pbl_loongson1_pll
-	pbl_loongson1_ram_generic_config
-
-skip_pll_ram_config:
-	/* Initialize caches... */
-	mips_cache_reset
-
-	/* ... and enable them */
-	dcache_enable
-
-	pbl_loongson1_uart_enable
-	debug_ll_ath79_init
-
-	pbl_loongson1_mdio_gpio_enable
-
-	.set	pop
-	.endm
-
-	.macro	loongson1_pbl_generic_sram_start
-	.set	push
-	.set	noreorder
-
-	mips_barebox_10h
-
-	hornet_mips24k_cp0_setup
-
-	hornet_1_1_war
-
-	pbl_loongson1_pll
-	pbl_loongson1_ram_generic_config
-
-	pbl_loongson1_uart_enable
-	debug_ll_ath79_init
-
-	pbl_loongson1_mdio_gpio_enable
-
-	.set	pop
-	.endm
-
-#endif /* __ASM_MACH_ATH79_PBL_MACROS_H */
+#endif /* __ASM_MACH_LOONGSON1_PBL_MACROS_H */
