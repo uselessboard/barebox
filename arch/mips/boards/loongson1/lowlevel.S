@@ -27,7 +27,8 @@ ENTRY_FUNCTION(BOARD_PBL_START)
 	pbl_loongson1_pll
 
 	pbl_loongson1_uart_enable
-//	pbl_loongson1_calc_prescale 115200
+	pbl_loongson1_calc_prescale 115200
+	move	a0, v0
 	debug_ll_ns16550_init
 	debug_ll_ns16550_outnl
 	debug_ll_outc '.'

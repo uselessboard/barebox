@@ -5,47 +5,51 @@
 #include <asm/regdef.h>
 
 /*
-     (32 + 1) * (12 * 1024 + n)
-p = ----------------------------
-       2048 * 32 * DIV * baud
-*/
+ *              (12 * 1024 + N)     33 * 625
+ * prescale  = ----------------- * ----------
+ *              DIV * (baud/25)       1024
+ */
 
 .macro pbl_loongson1_calc_prescale baud
 	.set	push
 	.set	noreorder
-li a0, \baud
-// n
-li t0, 0xbfe78030
-lw t0, 0 (t0)
-li v0, 0x0003ff00
-and v0, v0, t0
-sra v0, v0, 8
-li v1, 0x0000003f
-and v1, v1, t0
-sll v1, v1, 10
-or v1, v1, v0
 
-// dividend
-li t0, 12*1024
-addu v1, v1, t0
-sll t0, v1, 5
-addu v1, v1, t0
+	li a0, \baud
 
-// divisor
-li t0, 0xbfe78030
-lw t0, 4 (t0)
-sra t0, t0, 14
-andi v0, t0, 0xf
-sll v0, v0, 16 /* 2048 * 32 * DIV */
-multu v0, a0
-nop
-mflo v0
+	/* PLL_FREQ -> t8 */
+	li	t8, 0xbfe78030
+	lw	t8, 0 (t8)
 
-// do division
-divu v1, v0
-nop
-mfhi v1
-mflo v0
+	/* N -> t9, t8 -> X */
+	sra	t9, t8, 8
+	andi	t9, 0x3f
+	sll	t8, 10
+	andi	t9, 0x3ff
+	or	t9, t8
+
+	/* t9 += 12 * 1024 */
+	li	t8, 12288
+	add	t9, t8
+	/* DIV -> t8 */
+	li	t8, 0xbfe78030
+	lw	t8, 4 (t8)
+	sra	t8, 14
+	andi	t8, 0xf
+
+	multu	t8, a0
+	mflo	t8
+	li	v0, 25
+	divu	t8, v0
+	/* t9 = a / b */
+	divu	t9, t8
+	mflo	t9
+
+	li	t8, 20955	/* 33 * 625 */
+	multu	t9, t8
+	mflo	t9
+
+	sra	v0, t9, 10
+
 	.set	pop
 .endm
 
