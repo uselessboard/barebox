@@ -3,7 +3,7 @@
 #include "ls1b.dtsi"
 
 / {
-	model = "Loongson Tech LS1B Demo Board";
+	model = "Loongson1";
 	compatible = "loongson,ls1b";
 
 	memory@0 {
