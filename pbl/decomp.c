@@ -38,15 +38,7 @@ STATIC int decompress(u8 *input, int in_len,
 				u8 *output, int *posp,
 				void (*error) (char *x))
 {
-	puthex_ll(output);
-	putc_ll(' ');
-	puthex_ll(input);
-	putc_ll(' ');
-	puthex_ll(in_len);
-	putc_ll(' ');
-
 	memcpy(output, input, in_len);
-	puts_ll("copy done!\n");
 	return 0;
 }
 #endif
@@ -113,11 +105,8 @@ void pbl_barebox_uncompress(void *dest, void *compressed_start, unsigned int len
 		}
 	}
 
-	
 	decompress((void *)compressed_start,
 			len,
 			NULL, NULL,
 			dest, NULL, errorfn);
-
-	puts_ll("I am back\n");
 }
