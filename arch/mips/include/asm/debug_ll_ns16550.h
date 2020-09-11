@@ -66,6 +66,9 @@ static inline void PUTC_LL(char ch)
 	sb	t1, UART_LCR(t0)		/* Write it out */
 
 	li	t1, DEBUG_LL_UART_DIVISOR
+#if DEBUG_LL_UART_DIVISOR == 0
+	move	t1, a0
+#endif
 	sb	t1, UART_DLL(t0)		/* write low order byte */
 	srl	t1, t1, 8
 	sb	t1, UART_DLM(t0)		/* write high order byte */
