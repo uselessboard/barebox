@@ -9,6 +9,7 @@
 /** @file
  *  This File contains declaration for early output support
  */
+#include <mach/debug_ll_loongson1.h>
 #include <asm/debug_ll_ns16550.h>
 
 #endif /* __MACH_LOONGSON_DEBUG_LL__ */
