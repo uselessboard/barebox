@@ -20,16 +20,14 @@
  * a2: size of area to clear
  */
 
+        .text
+        .align  5
+        .set    noreorder
 LEAF(memcpy4)
-	.set	noreorder
-
-//	li	a2, 4
-//
 	move	v0, ra
 	bal	1f
 1:	nop
 __ra:	addiu	ra, (__memcpy0 - __ra)
-
 
 //	ra = __memcpy0 - t2 * 2
 	andi	t2, a2, 511
@@ -40,22 +38,14 @@ __ra:	addiu	ra, (__memcpy0 - __ra)
 	subu	ra, ra, t2
 	subu	ra, ra, t2
 
-
 	addu	t8, a0, t2
-	addu	t8, t0
 	subu	t8, 512
 
 	addu	t9, a1, t2
-	addu	t9, t0
 	subu	t9, 512
 
 	subu	t2, a2, t0
-	sra	t2, a2, 9
-
-	/* wait for jtag */
-//	move	a3, zero
-//	beq	a3, zero, .
-//	nop
+	sra	t2, t2, 9
 
 	jr	ra	/* goto .L001 ~ .L128 */
 	 nop
@@ -203,14 +193,8 @@ __memcpy0:
 	addiu	t9, 512
 
 	subu	t2, 1
-	blt	zero, t2, .L512
+	bge	t2, zero, .L512
 	nop
-
-
-//	move	a3, zero
-//dbg:	beq	zero, a3, dbg
-//	nop
-	
 
 	move	ra, v0
 	jr	ra
