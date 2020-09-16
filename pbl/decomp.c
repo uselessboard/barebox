@@ -38,7 +38,8 @@ STATIC int decompress(u8 *input, int in_len,
 				u8 *output, int *posp,
 				void (*error) (char *x))
 {
-	memcpy(output, input, in_len);
+	extern void *memcpy4(void *dest, const void *src, size_t n);
+	memcpy4(output, input, in_len);
 	return 0;
 }
 #endif

@@ -113,6 +113,7 @@ void relocate_code(void *fdt, u32 fdt_size, u32 ram_size)
 	uint8_t *buf;
 	unsigned int type;
 	long off;
+	extern void *memcpy4(void *dest, const void *src, size_t n);
 
 	bss_len = (unsigned long)&__bss_stop - (unsigned long)__bss_start;
 	memset(__bss_start, 0, bss_len);
@@ -138,7 +139,7 @@ void relocate_code(void *fdt, u32 fdt_size, u32 ram_size)
 		panic("Mis-aligned relocation\n");
 
 	/* Copy Barebox to RAM */
-	memcpy((void *)relocaddr, __image_start, barebox_image_size);
+	memcpy4((void *)relocaddr, __image_start, barebox_image_size);
 
 	/* Now apply relocations to the copy in RAM */
 	buf = __rel_start;
