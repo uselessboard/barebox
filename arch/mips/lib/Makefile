@@ -8,6 +8,8 @@ obj-y += reloc.o
 obj-y += sections.o
 obj-y += shutdown.o
 obj-y += dma-default.o
+obj-y += memset4.o
+obj-y += memcpy4.o
 
 obj-$(CONFIG_MIPS_OPTIMIZED_STRING_FUNCTIONS) += memcpy.o
 obj-$(CONFIG_MIPS_OPTIMIZED_STRING_FUNCTIONS) += memset.o
