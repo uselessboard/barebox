@@ -69,11 +69,31 @@
 	.set	pop
 .endm
 
-#define GPIOCFG1	0xbfd010C4
+#define GPIOCFG0  0xbfd010C0
+#define GPIOCFG1  0xbfd010C4
+#define GPIOOE0   0xbfd010D0
+#define GPIOOE1   0xbfd010D4
+#define GPIOIN0   0xbfd010E0
+#define GPIOIN1   0xbfd010E4
+#define GPIOOUT0  0xbfd010F0
+#define GPIOOUT1  0xbfd010F4
+
+#define LED9 0x040
+#define LED6 0x080
+#define LED7 0x100 /* beep, don't use it */
+#define LED8 0x200
+
+#define LED LED7
+
 .macro	pbl_loongson1_uart_enable
 	.set	push
 
 	pbl_reg_clr 0x00C00000, GPIOCFG1
+
+	pbl_reg_set LED GPIOCFG1
+	pbl_reg_clr LED GPIOOE1
+	/* disable BEEP */
+	pbl_reg_clr LED GPIOOUT1
 
 	.set	pop
 .endm
