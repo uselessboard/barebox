@@ -15,26 +15,6 @@
 #include <bootsource.h>
 #include <dt-bindings/pinctrl/stm32-pinfunc.h>
 
-/* DBGMCU register */
-#define DBGMCU_IDC		(STM32_DBGMCU_BASE + 0x00)
-#define DBGMCU_APB4FZ1		(STM32_DBGMCU_BASE + 0x2C)
-#define DBGMCU_APB4FZ1_IWDG2	BIT(2)
-#define DBGMCU_IDC_DEV_ID_MASK	GENMASK(11, 0)
-#define DBGMCU_IDC_DEV_ID_SHIFT	0
-#define DBGMCU_IDC_REV_ID_MASK	GENMASK(31, 16)
-#define DBGMCU_IDC_REV_ID_SHIFT	16
-
-#define RCC_DBGCFGR		(STM32_RCC_BASE + 0x080C)
-#define RCC_DBGCFGR_DBGCKEN	BIT(8)
-
-/* BSEC OTP index */
-#define BSEC_OTP_RPN	1
-#define BSEC_OTP_PKG	16
-
-/* Device Part Number (RPN) = OTP_DATA1 lower 8 bits */
-#define RPN_SHIFT	0
-#define RPN_MASK	GENMASK(7, 0)
-
 /* Package = bit 27:29 of OTP16
  * - 100: LBGA448  (FFI) => AA = LFBGA 18x18mm 448 balls p. 0.8mm
  * - 011: LBGA354  (LCI) => AB = LFBGA 16x16mm 359 balls p. 0.8mm
@@ -80,12 +60,6 @@
 #define FIXUP_CPU_NUM(mask) ((mask) >> 16)
 #define FIXUP_CPU_HZ(mask) (((mask) & GENMASK(15, 0)) * 1000UL * 1000UL)
 
-static enum stm32mp_forced_boot_mode __stm32mp_forced_boot_mode;
-enum stm32mp_forced_boot_mode st32mp_get_forced_boot_mode(void)
-{
-	return __stm32mp_forced_boot_mode;
-}
-
 static void setup_boot_mode(void)
 {
 	u32 boot_ctx = readl(TAMP_BOOT_CONTEXT);
@@ -121,17 +95,11 @@ static void setup_boot_mode(void)
 		break;
 	}
 
-	__stm32mp_forced_boot_mode = boot_ctx & TAMP_BOOT_FORCED_MASK;
-
-	pr_debug("[boot_ctx=0x%x] => mode=0x%x, instance=%d forced=0x%x\n",
-		 boot_ctx, boot_mode, instance, __stm32mp_forced_boot_mode);
+	pr_debug("[boot_ctx=0x%x] => mode=0x%x, instance=%d\n",
+		 boot_ctx, boot_mode, instance);
 
 	bootsource_set(src);
 	bootsource_set_instance(instance);
-
-	/* clear TAMP for next reboot */
-	clrsetbits_le32(TAMP_BOOT_CONTEXT, TAMP_BOOT_FORCED_MASK,
-			STM32MP_BOOT_NORMAL);
 }
 
 static int __stm32mp_cputype;
@@ -152,38 +120,9 @@ int stm32mp_package(void)
 	return __stm32mp_package;
 }
 
-static inline u32 read_idc(void)
-{
-	setbits_le32(RCC_DBGCFGR, RCC_DBGCFGR_DBGCKEN);
-	return readl(IOMEM(DBGMCU_IDC));
-}
-
-/* Get Device Part Number (RPN) from OTP */
-static int get_cpu_rpn(u32 *rpn)
-{
-	int ret = bsec_read_field(BSEC_OTP_RPN, rpn);
-	if (ret)
-		return ret;
-
-	*rpn = (*rpn >> RPN_SHIFT) & RPN_MASK;
-	return 0;
-}
-
 static u32 get_cpu_revision(void)
 {
-	return (read_idc() & DBGMCU_IDC_REV_ID_MASK) >> DBGMCU_IDC_REV_ID_SHIFT;
-}
-
-static int get_cpu_type(u32 *type)
-{
-	u32 id;
-	int ret = get_cpu_rpn(type);
-	if (ret)
-		return ret;
-
-	id = (read_idc() & DBGMCU_IDC_DEV_ID_MASK) >> DBGMCU_IDC_DEV_ID_SHIFT;
-	*type |= id << 16;
-	return 0;
+	return (stm32mp_read_idc() & DBGMCU_IDC_REV_ID_MASK) >> DBGMCU_IDC_REV_ID_SHIFT;
 }
 
 static int get_cpu_package(u32 *pkg)
@@ -250,7 +189,7 @@ static int setup_cpu_type(void)
 	u32 pkg;
 	int ret;
 
-	get_cpu_type(&__stm32mp_cputype);
+	__stm32mp_get_cpu_type(&__stm32mp_cputype);
 	switch (__stm32mp_cputype) {
 	case CPU_STM32MP157Fxx:
 		cputypestr = "157F";
@@ -366,4 +305,4 @@ static int stm32mp_init(void)
 
 	return 0;
 }
-postcore_initcall(stm32mp_init);
+core_initcall(stm32mp_init);

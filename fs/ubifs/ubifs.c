@@ -430,8 +430,7 @@ static int ubifs_probe(struct device_d *dev)
 
 	priv->ubi = ubi_open_volume_cdev(priv->cdev, UBI_READONLY);
 	if (IS_ERR(priv->ubi)) {
-		dev_err(dev, "failed to open ubi volume: %s\n",
-				strerrorp(priv->ubi));
+		dev_err(dev, "failed to open ubi volume: %pe\n", priv->ubi);
 		ret = PTR_ERR(priv->ubi);
 		goto err_free;
 	}
@@ -517,8 +516,7 @@ static int ubifs_init(void)
 
 coredevice_initcall(ubifs_init);
 
-BAREBOX_MAGICVAR_NAMED(global_ubifs_allow_encrypted, global.ubifs.allow_encrypted,
-		       "If true, allow to mount UBIFS with encrypted files");
-BAREBOX_MAGICVAR_NAMED(global_ubifs_allow_authenticated_unauthenticated,
-		       global.ubifs.allow_authenticated_unauthenticated,
-		       "If true, allow to mount authenticated UBIFS images without doing authentication");
+BAREBOX_MAGICVAR(global.ubifs.allow_encrypted,
+		 "If true, allow to mount UBIFS with encrypted files");
+BAREBOX_MAGICVAR(global.ubifs.allow_authenticated_unauthenticated,
+		 "If true, allow to mount authenticated UBIFS images without doing authentication");

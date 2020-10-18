@@ -35,8 +35,7 @@ static struct file_list *parse(const char *files)
 {
 	struct file_list *list = file_list_parse(files);
 	if (IS_ERR(list)) {
-		pr_err("Parsing file list \"%s\" failed: %s\n", files,
-		       strerrorp(list));
+		pr_err("Parsing file list \"%s\" failed: %pe\n", files, list);
 		return NULL;
 	}
 	return list;
@@ -101,7 +100,7 @@ int usbgadget_register(bool dfu, const char *dfu_opts,
 	return ret;
 }
 
-static int usbgadget_autostart(void)
+static int usbgadget_autostart_set(struct param_d *param, void *ctx)
 {
 	bool fastboot_bbu = get_fastboot_bbu();
 
@@ -110,12 +109,12 @@ static int usbgadget_autostart(void)
 
 	return usbgadget_register(true, NULL, true, NULL, acm, fastboot_bbu);
 }
-postenvironment_initcall(usbgadget_autostart);
 
 static int usbgadget_globalvars_init(void)
 {
 	if (IS_ENABLED(CONFIG_USB_GADGET_AUTOSTART)) {
-		globalvar_add_simple_bool("usbgadget.autostart", &autostart);
+		globalvar_add_bool("usbgadget.autostart", usbgadget_autostart_set,
+				   &autostart, NULL);
 		globalvar_add_simple_bool("usbgadget.acm", &acm);
 	}
 	globalvar_add_simple_string("usbgadget.dfu_function", &dfu_function);
@@ -124,12 +123,9 @@ static int usbgadget_globalvars_init(void)
 }
 device_initcall(usbgadget_globalvars_init);
 
-BAREBOX_MAGICVAR_NAMED(global_usbgadget_autostart,
-		       global.usbgadget.autostart,
-		       "usbgadget: Automatically start usbgadget on boot");
-BAREBOX_MAGICVAR_NAMED(global_usbgadget_acm,
-		       global.usbgadget.acm,
-		       "usbgadget: Create CDC ACM function");
-BAREBOX_MAGICVAR_NAMED(global_usbgadget_dfu_function,
-		       global.usbgadget.dfu_function,
-		       "usbgadget: Create DFU function");
+BAREBOX_MAGICVAR(global.usbgadget.autostart,
+		 "usbgadget: Automatically start usbgadget on boot");
+BAREBOX_MAGICVAR(global.usbgadget.acm,
+		 "usbgadget: Create CDC ACM function");
+BAREBOX_MAGICVAR(global.usbgadget.dfu_function,
+		 "usbgadget: Create DFU function");

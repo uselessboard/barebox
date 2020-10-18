@@ -229,7 +229,7 @@ static struct gpio_ops at91_gpio4_ops = {
 static int pinctrl_at91_pio4_gpiochip_add(struct device_d *dev,
 					  struct pinctrl_at91_pio4 *pinctrl)
 {
-	struct at91_pinctrl_data *drvdata;
+	const struct at91_pinctrl_data *drvdata;
 	struct clk *clk;
 	int ret;
 
@@ -247,7 +247,7 @@ static int pinctrl_at91_pio4_gpiochip_add(struct device_d *dev,
 		return ret;
 	}
 
-	dev_get_drvdata(dev, (const void **)&drvdata);
+	drvdata = device_get_match_data(dev);
 
 	pinctrl->gpiochip.ops = &at91_gpio4_ops;
 	pinctrl->gpiochip.base = 0;
@@ -313,8 +313,4 @@ static struct driver_d pinctrl_at91_pio4_driver = {
 	.of_compatible	= DRV_OF_COMPAT(pinctrl_at91_pio4_dt_ids),
 };
 
-static int pinctrl_at91_pio4_init(void)
-{
-	return platform_driver_register(&pinctrl_at91_pio4_driver);
-}
-core_initcall(pinctrl_at91_pio4_init);
+core_platform_driver(pinctrl_at91_pio4_driver);

@@ -388,7 +388,7 @@ static int pinctrl_tegra_xusb_probe(struct device_d *dev)
 	dev->priv = padctl;
 	padctl->dev = dev;
 
-	dev_get_drvdata(dev, (const void **)&padctl->soc);
+	padctl->soc = device_get_match_data(dev);
 
 	iores = dev_request_mem_resource(dev, 0);
 	if (IS_ERR(iores)) {
@@ -514,8 +514,4 @@ static struct driver_d pinctrl_tegra_xusb_driver = {
 	.of_compatible	= DRV_OF_COMPAT(pinctrl_tegra_xusb_dt_ids),
 };
 
-static int pinctrl_tegra_xusb_init(void)
-{
-	return platform_driver_register(&pinctrl_tegra_xusb_driver);
-}
-core_initcall(pinctrl_tegra_xusb_init);
+core_platform_driver(pinctrl_tegra_xusb_driver);

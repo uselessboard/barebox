@@ -652,11 +652,16 @@ static int globalvar_init(void)
 
 	globalvar_add_simple("version", UTS_RELEASE);
 
+	if (strlen(buildsystem_version_string) > 0)
+		globalvar_add_simple("buildsystem.version", buildsystem_version_string);
+
 	return 0;
 }
 pure_initcall(globalvar_init);
 
-BAREBOX_MAGICVAR_NAMED(global_version, global.version, "The barebox version");
+BAREBOX_MAGICVAR(global.version, "The barebox version");
+BAREBOX_MAGICVAR(global.buildsystem.version,
+		 "version of buildsystem barebox was built with");
 
 /**
  * nvvar_save - save NV variables to persistent environment
@@ -668,7 +673,7 @@ int nvvar_save(void)
 {
 	struct param_d *param;
 	const char *env = default_environment_path_get();
-	int ret;
+	int ret = 0;
 #define TMPDIR "/.env.tmp"
 	if (!nv_dirty || !env)
 		return 0;

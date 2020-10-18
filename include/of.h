@@ -231,6 +231,8 @@ extern int of_property_write_u64_array(struct device_node *np,
 				size_t sz);
 extern int of_property_write_string(struct device_node *np, const char *propname,
 				    const char *value);
+extern int of_property_write_strings(struct device_node *np, const char *propname,
+				    ...) __attribute__((__sentinel__));
 
 extern struct device_node *of_parse_phandle(const struct device_node *np,
 					    const char *phandle_name,
@@ -252,6 +254,8 @@ extern int of_modalias_node(struct device_node *node, char *modalias, int len);
 
 extern struct device_node *of_get_root_node(void);
 extern int of_set_root_node(struct device_node *node);
+extern void barebox_register_of(struct device_node *root);
+extern void barebox_register_fdt(const void *dtb);
 
 extern struct device_d *of_platform_device_create(struct device_node *np,
 						struct device_d *parent);
@@ -732,6 +736,8 @@ static inline int of_autoenable_i2c_by_component(char *path)
 
 #endif
 
+#define for_each_property_of_node(dn, pp) \
+	list_for_each_entry(pp, &dn->properties, list)
 #define for_each_node_by_name(dn, name) \
 	for (dn = of_find_node_by_name(NULL, name); dn; \
 	     dn = of_find_node_by_name(dn, name))

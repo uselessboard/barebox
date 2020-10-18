@@ -401,6 +401,8 @@ int platform_driver_register(struct driver_d *drv);
 	}						\
 	level##_initcall(drv##_register)
 
+#define core_platform_driver(drv)	\
+	register_driver_macro(core,platform,drv)
 #define postcore_platform_driver(drv)	\
 	register_driver_macro(postcore,platform,drv)
 #define coredevice_platform_driver(drv)	\
@@ -409,6 +411,10 @@ int platform_driver_register(struct driver_d *drv);
 	register_driver_macro(device,platform,drv)
 #define console_platform_driver(drv)	\
 	register_driver_macro(console,platform,drv)
+#define mem_platform_driver(drv)	\
+	register_driver_macro(mem,platform,drv)
+#define fs_platform_driver(drv)	\
+	register_driver_macro(fs,platform,drv)
 #define late_platform_driver(drv)	\
 	register_driver_macro(late,platform,drv)
 
@@ -534,7 +540,25 @@ int devfs_create_partitions(const char *devname,
 #define DRV_OF_COMPAT(compat) \
 	IS_ENABLED(CONFIG_OFDEVICE) ? (compat) : NULL
 
+/**
+ * dev_get_drvdata - get driver match data associated with device
+ * @dev: device instance
+ * @data: pointer to void *, where match data is stored
+ *
+ * Returns 0 on success and error code otherwise.
+ *
+ * DEPRECATED: use device_get_match_data instead, which avoids
+ * common pitfalls due to explicit pointer casts
+ */
 int dev_get_drvdata(struct device_d *dev, const void **data);
+
+/**
+ * device_get_match_data - get driver match data associated with device
+ * @dev: device instance
+ *
+ * Returns match data on success and NULL otherwise
+ */
+const void *device_get_match_data(struct device_d *dev);
 
 int device_match_of_modalias(struct device_d *dev, struct driver_d *drv);
 

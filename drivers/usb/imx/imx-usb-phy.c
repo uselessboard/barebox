@@ -165,7 +165,7 @@ static int imx_usbphy_probe(struct device_d *dev)
 
 	imxphy->clk = clk_get(dev, NULL);
 	if (IS_ERR(imxphy->clk)) {
-		dev_err(dev, "could not get clk: %s\n", strerrorp(imxphy->clk));
+		dev_err(dev, "could not get clk: %pe\n", imxphy->clk);
 		ret = PTR_ERR(imxphy->clk);
 		goto err_clk;
 	}
@@ -216,8 +216,4 @@ static struct driver_d imx_usbphy_driver = {
 	.of_compatible = DRV_OF_COMPAT(imx_usbphy_dt_ids),
 };
 
-static int imx_usbphy_init(void)
-{
-	return platform_driver_register(&imx_usbphy_driver);
-}
-fs_initcall(imx_usbphy_init);
+fs_platform_driver(imx_usbphy_driver);

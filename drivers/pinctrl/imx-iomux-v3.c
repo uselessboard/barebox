@@ -168,10 +168,10 @@ static struct pinctrl_ops imx_iomux_v3_ops = {
 static int imx_pinctrl_dt(struct device_d *dev, void __iomem *base)
 {
 	struct imx_iomux_v3 *iomux;
-	struct imx_iomux_v3_data *drvdata = NULL;
+	const struct imx_iomux_v3_data *drvdata;
 	int ret;
 
-	dev_get_drvdata(dev, (const void **)&drvdata);
+	drvdata = device_get_match_data(dev);
 	iomux = xzalloc(sizeof(*iomux));
 
 	iomux->base = base;
@@ -265,8 +265,4 @@ static struct driver_d imx_iomux_v3_driver = {
 	.of_compatible	= DRV_OF_COMPAT(imx_iomux_v3_dt_ids),
 };
 
-static int imx_iomux_v3_init(void)
-{
-	return platform_driver_register(&imx_iomux_v3_driver);
-}
-core_initcall(imx_iomux_v3_init);
+core_platform_driver(imx_iomux_v3_driver);

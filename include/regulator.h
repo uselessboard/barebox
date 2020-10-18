@@ -2,6 +2,8 @@
 #ifndef __REGULATOR_H
 #define __REGULATOR_H
 
+struct device_d;
+
 /* struct regulator is an opaque object for consumers */
 struct regulator;
 
@@ -77,6 +79,8 @@ struct regulator_dev {
 	const struct regulator_desc *desc;
 	struct regmap *regmap;
 	int boot_on;
+	/* the device this regulator device belongs to */
+	struct device_d *dev;
 };
 
 struct regulator_ops {

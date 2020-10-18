@@ -906,6 +906,11 @@ config DEFAULT_ENVIRONMENT_GENERIC_NEW_DFU
 	depends on USB_GADGET_DFU
 	default y
 
+config DEFAULT_ENVIRONMENT_GENERIC_NEW_REBOOT_MODE
+	bool "Generic reboot-mode handlers in the environment"
+	depends on DEFAULT_ENVIRONMENT_GENERIC_NEW
+	depends on REBOOT_MODE
+
 config DEFAULT_ENVIRONMENT_PATH
 	string
 	depends on DEFAULT_ENVIRONMENT
@@ -1292,7 +1297,6 @@ config DEBUG_IMX_UART_PORT
 						DEBUG_IMX51_UART || \
 						DEBUG_IMX53_UART || \
 						DEBUG_IMX6Q_UART || \
-						DEBUG_IMX6SL_UART || \
 						DEBUG_IMX7D_UART || \
 						DEBUG_IMX8M_UART || \
 						DEBUG_VF610_UART
