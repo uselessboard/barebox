@@ -21,6 +21,7 @@
 				#size-cells = <1>;
 				ranges;
 
+
 				apb@0x1fe40000 {
 					compatible = "loongson,apb-bus", "simple-bus";
 					#address-cells = <1>;
@@ -123,9 +124,17 @@
 						status = "disabled";
 					};
 
+					nand: nand@1fe78000 {
+						compatible = "loongson,ls1b-nand";
+						regs = <0x1fe78000 0x30>, <0x1fe78040 0x8>;
+						reg-names = "ctrl", "dma";
+				       };
 
-
-
+					pll: pll@1fe78030 {
+						compatible = "loongson,ls1b-pll";
+						regs = <0x1fe78030 0x8>;
+						clocks = <&oscilaor>;
+					};
 				};
 			};
 		};

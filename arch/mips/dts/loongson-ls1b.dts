@@ -6,6 +6,14 @@
 	model = "Loongson Tech LS1B Demo Board";
 	compatible = "loongson,ls1b";
 
+
+	oscilaor: oscilaor {
+			#clock-cells = <0>;
+			compatible = "fixed-clock";
+			clock-frequency = <33000000>;
+			clock-output-names = "OSC-33MHz";
+		};
+
 	memory@0 {
 		device_type = "memory";
 		reg = <0x00000000 0x4000000>;
