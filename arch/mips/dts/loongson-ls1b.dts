@@ -7,7 +7,7 @@
 	compatible = "loongson,ls1b";
 
 
-	oscilaor: oscilaor {
+	oscillator: oscillator {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <33000000>;

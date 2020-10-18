@@ -133,7 +133,7 @@
 					pll: pll@1fe78030 {
 						compatible = "loongson,ls1b-pll";
 						regs = <0x1fe78030 0x8>;
-						clocks = <&oscilaor>;
+						clocks = <&oscillator>;
 					};
 				};
 			};
