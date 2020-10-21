@@ -38,11 +38,7 @@ struct clk_ls1b200 {
 
 static unsigned long clk_ls1b200_recalc_rate(struct clk *clk, unsigned long parent_rate)
 {
-
-	int pll;
 	int n;
-	int osc;
-	int div;
 	unsigned long rate;
 
 	struct clk_ls1b200 *ls1bclk;
@@ -96,11 +92,13 @@ static struct clk *clk_ls1b200(const char *name, const char *parent,
 }
 
 
-#define LS1B200_CLK_CPU 0
-#define LS1B200_CLK_DDR 1
-#define LS1B200_CLK_AHB 2
-#define LS1B200_CLK_DC  3
-#define LS1B200_CLK_END 4
+#define LS1B200_CLK_PLL 0
+#define LS1B200_CLK_CPU 1
+#define LS1B200_CLK_DDR 2
+#define LS1B200_CLK_APB 3
+#define LS1B200_CLK_DC  4
+
+#define LS1B200_CLK_END 5
 
 #define LS1B200_CPU_DIV_SHIFT 20
 #define LS1B200_CPU_DIV_MASK  0xf
@@ -112,25 +110,22 @@ static struct clk *clk_ls1b200(const char *name, const char *parent,
 #define LS1B200_DC_DIV_SHIFT  26
 #define LS1B200_DC_DIV_MASK   0xf
 
-#define LS1B200_CLK_AHB_DIV_SHIFT 0
-#define LS1B200_CLK_AHB_MASK      0
+#define LS1B200_CLK_APB_MULT	1
+#define LS1B200_CLK_APB_DIV	2
 
 static void ls1b200_pll_init(void __iomem *base)
 {
-	clks[LS1B200_CLK_CPU] = clk_ls1b200("pll", "oscillator", base,
-		0, 0);
+	clks[LS1B200_CLK_PLL] = clk_ls1b200("pll", "oscillator", base, 0, 0);
 
-	clks[LS1B200_CLK_CPU] = clk_ls1b200("cpu", "pll", base,
-		LS1B200_CPU_DIV_SHIFT, LS1B200_CPU_DIV_MASK);
+	clks[LS1B200_CLK_CPU] = clk_divider("cpu", "pll", 0,
+		base, LS1B200_CPU_DIV_SHIFT, LS1B200_CPU_DIV_MASK, 0);
+	clks[LS1B200_CLK_DDR] =  clk_divider("ddr", "pll", 0,
+		base, LS1B200_DDR_DIV_SHIFT, LS1B200_DDR_DIV_MASK, 0);
+	clks[LS1B200_CLK_DC]  = clk_divider("dc", "pll", 0,
+		base, LS1B200_DC_DIV_SHIFT, LS1B200_DC_DIV_MASK, 0);
 
-	clks[LS1B200_CLK_DDR] = clk_ls1b200("ddr", "pll", base,
-		LS1B200_DDR_DIV_SHIFT, LS1B200_DDR_DIV_MASK);
-
-	clks[LS1B200_CLK_AHB] = clk_ls1b200("dc", "pll", base,
-		LS1B200_CLK_AHB_DIV_SHIFT, LS1B200_CLK_AHB_MASK);
-
-	clks[LS1B200_CLK_DC]  = clk_ls1b200("apb", "ddr", base,
-		LS1B200_DC_DIV_MASK, LS1B200_DC_DIV_MASK);
+	clks[LS1B200_CLK_APB] = clk_fixed_factor("apb", "ddr",
+		LS1B200_CLK_APB_MULT, LS1B200_CLK_APB_DIV, 0);
 }
 
 static int ls1b200_clk_probe(struct device_d *dev)
