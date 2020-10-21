@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2014 Antony Pavlov <antonynpavlov@gmail.com>
- * Copyright (C) 2020 Du Huanpeng <dhu@hodcarrier.cn>
+ * Copyright (C) 2020 Du Huanpeng <u74147@gmail.com>
  *
  * Based on the Linux ath79 clock code
  */
