@@ -17,13 +17,16 @@
 //#include <dt-bindings/clock/ath79-clk.h>
 
 
-#define LS1B_CLK_CPU		0
-#define LS1B_CLK_DDR		1
-#define LS1B_CLK_DC		2
-#define LS1B_CLK_APB		3
-#define LS1B_CLK_PLL		4
 
-#define LS1B_CLK_END		5
+
+#define LS1B_CLK_PLL	0
+#define LS1B_CLK_CPU	1
+#define LS1B_CLK_DDR	2
+#define LS1B_CLK_APB	3
+#define LS1B_CLK_DC	4
+#define LS1B_CLK_DIV4	5
+
+#define LS1B_CLK_END	6
 
 static struct clk *clks[LS1B_CLK_END];
 static struct clk_onecell_data clk_data;
@@ -82,44 +85,36 @@ static struct clk *clk_ls1b200(const char *name, const char *parent,
 }
 
 
-#define LS1B200_CLK_PLL 0
-#define LS1B200_CLK_CPU 1
-#define LS1B200_CLK_DDR 2
-#define LS1B200_CLK_APB 3
-#define LS1B200_CLK_DC  4
+#define LS1B_CPU_DIV_SHIFT	20
+#define LS1B_CPU_DIV_WIDTH	4
 
-#define LS1B200_CLK_END 5
-
-#define LS1B200_CPU_DIV_SHIFT	20
-#define LS1B200_CPU_DIV_WIDTH	4
-
-#define LS1B200_DDR_DIV_SHIFT	14
-#define LS1B200_DDR_DIV_WIDTH	4
+#define LS1B_DDR_DIV_SHIFT	14
+#define LS1B_DDR_DIV_WIDTH	4
 
 /* TODO: pll_out/4/DC_DIV */
-#define LS1B200_DC_DIV_SHIFT	26
-#define LS1B200_DC_DIV_WIDTH	4
+#define LS1B_DC_DIV_SHIFT	26
+#define LS1B_DC_DIV_WIDTH	4
 
-#define LS1B200_CLK_APB_MULT	1
-#define LS1B200_CLK_APB_DIV	2
+#define LS1B_CLK_APB_MULT	1
+#define LS1B_CLK_APB_DIV	2
 
 
-#define LS1B200_PLL_FREQ	0
-#define LS1B200_DIV_PARAM	4
+#define LS1B_PLL_FREQ	0
+#define LS1B_DIV_PARAM	4
 
 
 static void ls1b200_pll_init(void __iomem *base)
 {
-	clks[LS1B200_CLK_PLL] = clk_ls1b200("pll", "oscillator", base + LS1B200_PLL_FREQ, 0, 0);
+	clks[LS1B_CLK_PLL] = clk_ls1b200("pll", "oscillator", base + LS1B_PLL_FREQ, 0, 0);
 
-	clks[LS1B200_CLK_CPU] = clk_divider("cpu", "pll", 0,
-		base + LS1B200_DIV_PARAM , LS1B200_CPU_DIV_SHIFT, LS1B200_CPU_DIV_WIDTH, 0);
-	clks[LS1B200_CLK_DDR] = clk_divider("ddr", "pll", 0,
-		base + LS1B200_DIV_PARAM, LS1B200_DDR_DIV_SHIFT, LS1B200_DDR_DIV_WIDTH, 0);
-	clks[LS1B200_CLK_DC]  = clk_divider("dc", "pll", 0,
-		base + LS1B200_DIV_PARAM, LS1B200_DC_DIV_SHIFT, LS1B200_DC_DIV_WIDTH, 0);
-
-	clks[LS1B200_CLK_APB] = clk_fixed_factor("apb", "ddr", LS1B200_CLK_APB_MULT, LS1B200_CLK_APB_DIV, 0);
+	clks[LS1B_CLK_CPU] = clk_divider("cpu", "pll", 0,
+		base + LS1B_DIV_PARAM , LS1B_CPU_DIV_SHIFT, LS1B_CPU_DIV_WIDTH, 0);
+	clks[LS1B_CLK_DDR] = clk_divider("ddr", "pll", 0,
+		base + LS1B_DIV_PARAM, LS1B_DDR_DIV_SHIFT, LS1B_DDR_DIV_WIDTH, 0);
+	clks[LS1B_CLK_DIV4] = clk_fixed_factor("div4", "pll", 1, 4, 0);
+	clks[LS1B_CLK_DC] = clk_divider("dc", "div4", 0,
+		base + LS1B_DIV_PARAM, LS1B_DC_DIV_SHIFT, LS1B_DC_DIV_WIDTH, 0);
+	clks[LS1B_CLK_APB] = clk_fixed_factor("apb", "ddr", LS1B_CLK_APB_MULT, LS1B_CLK_APB_DIV, 0);
 }
 
 static int ls1b200_clk_probe(struct device_d *dev)
