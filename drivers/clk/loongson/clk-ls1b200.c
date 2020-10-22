@@ -18,8 +18,10 @@
 
 enum {
 LS1B_CLK_PLL,
+
 LS1B_CLK_CPU_MUX,
 LS1B_CLK_CPU,
+
 LS1B_CLK_DDR,
 LS1B_CLK_APB,
 LS1B_CLK_DC,
@@ -117,11 +119,13 @@ static void ls1b200_pll_init(void __iomem *base)
 
 	clks[LS1B_CLK_PLL] = clk_ls1b200("pll", "oscillator", base + PLL_FREQ, 0, 0);
 
+	clks[LS1B_CLK_CPU_MUX] = clk_mux("cpu_mux", 0, base + PLL_DIV_PARAM,
+		    8, 1, cpu_mux,  ARRAY_SIZE(cpu_mux), 0);
+
+
 	clks[LS1B_CLK_CPU] = clk_divider("cpu", "cpu_mux", 0,
 		base + PLL_DIV_PARAM , LS1B_CPU_DIV_SHIFT, LS1B_CPU_DIV_WIDTH, 0);
 
-	clks[LS1B_CLK_CPU_MUX] = clk_mux("cpu_mux", 0, base + PLL_DIV_PARAM,
-		    8, 2, cpu_mux,  ARRAY_SIZE(cpu_mux), 0);
 
 	clks[LS1B_CLK_DDR] = clk_divider("ddr", "pll", 0,
 		base + PLL_DIV_PARAM, LS1B_DDR_DIV_SHIFT, LS1B_DDR_DIV_WIDTH, 0);
