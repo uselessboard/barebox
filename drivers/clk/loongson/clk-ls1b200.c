@@ -23,9 +23,12 @@ LS1B_CLK_CPU_MUX,
 LS1B_CLK_CPU_DIV,
 
 LS1B_CLK_DDR_DIV,
+LS1B_CLK_DDR_MUX,
 LS1B_CLK_APB_DIV,
+
 LS1B_CLK_DC_DIV,
 LS1B_CLK_DIV4,
+LS1B_CLK_DC_MUX,
 
 LS1B_CLK_END
 };
@@ -110,6 +113,9 @@ static struct clk *clk_ls1b200(const char *name, const char *parent,
 }
 
 static const char *cpu_mux[] = {"cpu_div", "oscillator", };
+static const char *ddr_mux[] = {"ddr_div", "oscillator", };
+static const char *dc_mux[]  = {"dc_div", "oscillator", };
+
 
 //static const char *sel_io0[]  = { "ref_io0", "ref_xtal", };
 
@@ -119,20 +125,24 @@ static void ls1b200_pll_init(void __iomem *base)
 
 	clks[LS1B_CLK_PLL] = clk_ls1b200("pll", "oscillator", base + PLL_FREQ, 0, 0);
 
-	clks[LS1B_CLK_CPU_MUX] = clk_mux("cpu_mux", 0, base + PLL_DIV_PARAM,
-		    8, 1, cpu_mux,  ARRAY_SIZE(cpu_mux), 0);
-
 
 	clks[LS1B_CLK_CPU_DIV] = clk_divider("cpu_div", "pll", 0,
 		base + PLL_DIV_PARAM , LS1B_CPU_DIV_SHIFT, LS1B_CPU_DIV_WIDTH, 0);
-
+	clks[LS1B_CLK_CPU_MUX] = clk_mux("cpu_mux", 0, base + PLL_DIV_PARAM,
+		    8, 1, cpu_mux,  ARRAY_SIZE(cpu_mux), 0);
 
 	clks[LS1B_CLK_DDR_DIV] = clk_divider("ddr_div", "pll", 0,
 		base + PLL_DIV_PARAM, LS1B_DDR_DIV_SHIFT, LS1B_DDR_DIV_WIDTH, 0);
-	clks[LS1B_CLK_DIV4] = clk_fixed_factor("div4", "pll", 1, 4, 0);
-	clks[LS1B_CLK_DC_DIV] = clk_divider("dc_div", "div4", 0,
+	clks[LS1B_CLK_DDR_MUX] = clk_mux("ddr_mux", 0, base + PLL_DIV_PARAM,
+		    10, 1, ddr_mux,  ARRAY_SIZE(ddr_mux), 0);
+	clks[LS1B_CLK_APB_DIV] = clk_fixed_factor("apb_div", "ddr_mux", LS1B_CLK_APB_MULT, LS1B_CLK_APB_DIV, 0);
+
+	clks[LS1B_CLK_DIV4] = clk_fixed_factor("dc_div4", "pll", 1, 4, 0);
+
+	clks[LS1B_CLK_DC_DIV] = clk_divider("dc_div", "dc_div4", 0,
 		base + PLL_DIV_PARAM, LS1B_DC_DIV_SHIFT, LS1B_DC_DIV_WIDTH, 0);
-	clks[LS1B_CLK_APB_DIV] = clk_fixed_factor("apb_div", "ddr_div", LS1B_CLK_APB_MULT, LS1B_CLK_APB_DIV, 0);
+	clks[LS1B_CLK_DC_MUX] = clk_mux("dc_mux", 0, base + PLL_DIV_PARAM,
+		    10, 1, dc_mux,  ARRAY_SIZE(dc_mux), 0);
 }
 
 static int ls1b200_clk_probe(struct device_d *dev)
