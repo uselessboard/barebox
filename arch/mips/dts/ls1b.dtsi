@@ -120,7 +120,7 @@
 						compatible = "ns16550a";
 						reg = <0x1fe7c000 0x8>;
 						reg-shift = <0>;
-						clock-frequency = <83000000>;
+						clocks = <&pll 5>;
 						status = "disabled";
 					};
 
