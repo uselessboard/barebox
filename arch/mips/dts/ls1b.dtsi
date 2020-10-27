@@ -1,3 +1,5 @@
+#include <dt-bindings/clock/ls1b-clk.h>
+
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
@@ -9,36 +11,135 @@
 		device_type = "soc";
 		ranges;
 
-		serial0: serial@1fe40000 {
-			compatible = "ns16550a";
-			reg = <0x1fe40000 0x8>;
-			reg-shift = <0>;
-			clock-frequency = <83000000>;
-			status = "disabled";
-		};
+		xbar {
+			compatible = "loongson,xbar-bus", "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges;
 
-		serial1: serial@1fe44000 {
-			compatible = "ns16550a";
-			reg = <0x1fe44000 0x8>;
-			reg-shift = <0>;
-			clock-frequency = <83000000>;
-			status = "disabled";
-		};
+			axi-mux {
+				compatible = "loongson,axi-mux", "simple-bus";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				ranges;
 
-		serial2: serial@1fe48000 {
-			compatible = "ns16550a";
-			reg = <0x1fe48000 0x8>;
-			reg-shift = <0>;
-			clock-frequency = <83000000>;
-			status = "disabled";
-		};
 
-		serial3: serial@1fe4c000 {
-			compatible = "ns16550a";
-			reg = <0x1fe4c000 0x8>;
-			reg-shift = <0>;
-			clock-frequency = <83000000>;
-			status = "disabled";
+				apb@0x1fe40000 {
+					compatible = "loongson,apb-bus", "simple-bus";
+					#address-cells = <1>;
+					#size-cells = <1>;
+					ranges;
+
+					serial0: serial@1fe40000 {
+						compatible = "ns16550a";
+						reg = <0x1fe40000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial6: serial@1fe41000 {
+						compatible = "ns16550a";
+						reg = <0x1fe41000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial7: serial@1fe42000 {
+						compatible = "ns16550a";
+						reg = <0x1fe42000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial8: serial@1fe43000 {
+						compatible = "ns16550a";
+						reg = <0x1fe43000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial1: serial@1fe44000 {
+						compatible = "ns16550a";
+						reg = <0x1fe44000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial9: serial@1fe45000 {
+						compatible = "ns16550a";
+						reg = <0x1fe45000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial10: serial@1fe46000 {
+						compatible = "ns16550a";
+						reg = <0x1fe46000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial11: serial@1fe47000 {
+						compatible = "ns16550a";
+						reg = <0x1fe47000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial2: serial@1fe48000 {
+						compatible = "ns16550a";
+						reg = <0x1fe48000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial3: serial@1fe4c000 {
+						compatible = "ns16550a";
+						reg = <0x1fe4c000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial4: serial@1fe6c000 {
+						compatible = "ns16550a";
+						reg = <0x1fe6c000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					serial5: serial@1fe7c000 {
+						compatible = "ns16550a";
+						reg = <0x1fe7c000 0x8>;
+						reg-shift = <0>;
+						clocks = <&pll LS1B_CLK_APB_DIV>;
+						status = "disabled";
+					};
+
+					nand: nand@1fe78000 {
+						compatible = "loongson,ls1b-nand";
+						reg = <0x1fe78000 0x30>, <0x1fe78040 0x8>;
+						reg-names = "ctrl", "dma";
+				       };
+
+					pll: pll@1fe78030 {
+						compatible = "loongson,ls1b-pll";
+						#clock-cells = <1>;
+						reg = <0x1fe78030 0x8>;
+						clocks = <&oscillator>;
+					};
+				};
+			};
 		};
 	};
 };
