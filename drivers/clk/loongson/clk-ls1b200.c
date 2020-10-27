@@ -16,30 +16,17 @@
 //#include <mach/ath79.h>
 //#include <dt-bindings/clock/ath79-clk.h>
 
-enum {
-LS1B_CLK_PLL,
 
-LS1B_CLK_CPU_MUX,
-LS1B_CLK_CPU_DIV,
-
-LS1B_CLK_DDR_DIV,
-LS1B_CLK_DDR_MUX,
-LS1B_CLK_APB_DIV,
-
-LS1B_CLK_DC_DIV,
-LS1B_CLK_DIV4,
-LS1B_CLK_DC_MUX,
-
-LS1B_CLK_END
-};
-//#define LS1B_CLK_PLL	0
-//#define LS1B_CLK_CPU_MUX 6
-//#define LS1B_CLK_CPU	1
-//#define LS1B_CLK_DDR	2
-//#define LS1B_CLK_APB	3
-//#define LS1B_CLK_DC	4
-//#define LS1B_CLK_DIV4	5
-//#define LS1B_CLK_END	7
+#define LS1B_CLK_PLL		0
+#define LS1B_CLK_CPU_DIV	1
+#define LS1B_CLK_CPU_MUX	2
+#define LS1B_CLK_DDR_DIV	3
+#define LS1B_CLK_DDR_MUX	4
+#define LS1B_CLK_APB_DIV	5
+#define LS1B_CLK_DC_DIV		6
+#define LS1B_CLK_DIV4		7
+#define LS1B_CLK_DC_MUX		8
+#define LS1B_CLK_END		9
 
 #define LS1B_CPU_DIV_SHIFT	20
 #define LS1B_CPU_DIV_WIDTH	4
@@ -51,7 +38,7 @@ LS1B_CLK_END
 #define LS1B_DC_DIV_WIDTH	4
 
 #define LS1B_CLK_APB_MULT	1
-#define LS1B_CLK_APB_DIV	2
+#define LS1B_CLK_APB_DIV2	2
 
 #define PLL_FREQ	0
 #define PLL_DIV_PARAM	4
@@ -132,7 +119,7 @@ static void ls1b200_pll_init(void __iomem *base)
 		base + PLL_DIV_PARAM, LS1B_DDR_DIV_SHIFT, LS1B_DDR_DIV_WIDTH, CLK_DIVIDER_ONE_BASED);
 	clks[LS1B_CLK_DDR_MUX] = clk_mux("ddr_mux", 0, base + PLL_DIV_PARAM,
 		    10, 1, ddr_mux,  ARRAY_SIZE(ddr_mux), 0);
-	clks[LS1B_CLK_APB_DIV] = clk_fixed_factor("apb_div", "ddr_mux", LS1B_CLK_APB_MULT, LS1B_CLK_APB_DIV, 0);
+	clks[LS1B_CLK_APB_DIV] = clk_fixed_factor("apb_div", "ddr_mux", LS1B_CLK_APB_MULT, LS1B_CLK_APB_DIV2, 0);
 
 	clks[LS1B_CLK_DIV4] = clk_fixed_factor("dc_div4", "pll", 1, 4, 0);
 
