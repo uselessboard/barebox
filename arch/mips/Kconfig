@@ -118,6 +118,15 @@ config MACH_MIPS_BCM47XX
 
 config MACH_MIPS_LOONGSON
 	bool "Loongson-based boards"
+	select SYS_HAS_CPU_MIPS32_R2
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select CSRC_R4K_LIB
+	select HAS_DEBUG_LL
+	select COMMON_CLK
+	select COMMON_CLK_OF_PROVIDER
+	select CLKDEV_LOOKUP
+	select OFTREE
+	select GPIOLIB
 
 config MACH_MIPS_XBURST
 	bool "Ingenic XBurst-based boards"
