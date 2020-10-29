@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2016, NVIDIA CORPORATION.
  * Copyright (c) 2019, Ahmad Fatoum, Pengutronix
+ * Copyright (c) 2020, Du Huanpeng <u74147@gmail.com>
  *
  * Portions based on U-Boot's rtl8169.c and dwc_eth_qos.
  */
@@ -43,7 +44,7 @@
 #define SYSCFG_MP1_ETH_MASK		GENMASK(23, 16)
 #define SYSCFG_PMCCLRR_OFFSET		0x40
 
-struct eqos_stm32 {
+struct eqos_ls1b {
 	struct clk_bulk_data *clks;
 	int num_clks;
 	struct regmap *regmap;
@@ -52,24 +53,24 @@ struct eqos_stm32 {
 	int eth_ref_clk_sel_reg;
 };
 
-static inline struct eqos_stm32 *to_stm32(struct eqos *eqos)
+static inline struct eqos_ls1b *to_ls1b(struct eqos *eqos)
 {
 	return eqos->priv;
 }
 
 enum { CLK_STMMACETH, CLK_MAX_RX, CLK_MAX_TX, };
-static const struct clk_bulk_data stm32_clks[] = {
+static const struct clk_bulk_data ls1b_clks[] = {
 	[CLK_STMMACETH] = { .id = "stmmaceth" },
 	[CLK_MAX_RX]    = { .id = "mac-clk-rx" },
 	[CLK_MAX_TX]    = { .id = "mac-clk-tx" },
 };
 
-static unsigned long eqos_get_csr_clk_rate_stm32(struct eqos *eqos)
+static unsigned long eqos_get_csr_clk_rate_ls1b(struct eqos *eqos)
 {
-	return clk_get_rate(to_stm32(eqos)->clks[CLK_STMMACETH].clk);
+	return clk_get_rate(to_ls1b(eqos)->clks[CLK_STMMACETH].clk);
 }
 
-static int eqos_set_mode_stm32(struct eqos_stm32 *priv, phy_interface_t interface)
+static int eqos_set_mode_ls1b(struct eqos_ls1b *priv, phy_interface_t interface)
 {
 	u32 val, reg = priv->mode_reg;
 	int ret;
@@ -112,10 +113,10 @@ static int eqos_set_mode_stm32(struct eqos_stm32 *priv, phy_interface_t interfac
 	return 0;
 }
 
-static int eqos_init_stm32(struct device_d *dev, struct eqos *eqos)
+static int eqos_init_ls1b(struct device_d *dev, struct eqos *eqos)
 {
 	struct device_node *np = dev->device_node;
-	struct eqos_stm32 *priv = to_stm32(eqos);
+	struct eqos_ls1b *priv = to_ls1b(eqos);
 	struct clk_bulk_data *eth_ck;
 	int ret;
 
@@ -141,21 +142,21 @@ static int eqos_init_stm32(struct device_d *dev, struct eqos *eqos)
 		return -EINVAL;
 	}
 
-	ret = eqos_set_mode_stm32(priv, eqos->interface);
+	ret = eqos_set_mode_ls1b(priv, eqos->interface);
 	if (ret)
 		dev_warn(dev, "Configuring syscfg failed: %s\n", strerror(-ret));
 
-	priv->num_clks = ARRAY_SIZE(stm32_clks) + 1;
+	priv->num_clks = ARRAY_SIZE(ls1b_clks) + 1;
 	priv->clks = xmalloc(priv->num_clks * sizeof(*priv->clks));
-	memcpy(priv->clks, stm32_clks, sizeof stm32_clks);
+	memcpy(priv->clks, ls1b_clks, sizeof ls1b_clks);
 
-	ret = clk_bulk_get(dev, ARRAY_SIZE(stm32_clks), priv->clks);
+	ret = clk_bulk_get(dev, ARRAY_SIZE(ls1b_clks), priv->clks);
 	if (ret) {
 		dev_err(dev, "Failed to get clks: %s\n", strerror(-ret));
 		return ret;
 	}
 
-	eth_ck = &priv->clks[ARRAY_SIZE(stm32_clks)];
+	eth_ck = &priv->clks[ARRAY_SIZE(ls1b_clks)];
 	eth_ck->id = "eth-ck";
 	eth_ck->clk = clk_get(dev, eth_ck->id);
 	if (IS_ERR(eth_ck->clk)) {
@@ -173,25 +174,25 @@ static int eqos_init_stm32(struct device_d *dev, struct eqos *eqos)
 	return 0;
 }
 
-static struct eqos_ops stm32_ops = {
-	.init = eqos_init_stm32,
+static struct eqos_ops ls1b_ops = {
+	.init = eqos_init_ls1b,
 	.get_ethaddr = eqos_get_ethaddr,
 	.set_ethaddr = eqos_set_ethaddr,
 	.adjust_link = eqos_adjust_link,
-	.get_csr_clk_rate = eqos_get_csr_clk_rate_stm32,
+	.get_csr_clk_rate = eqos_get_csr_clk_rate_ls1b,
 
 	.clk_csr = EQOS_MDIO_ADDR_CR_250_300,
 	.config_mac = EQOS_MAC_RXQ_CTRL0_RXQ0EN_ENABLED_AV,
 };
 
-static int eqos_probe_stm32(struct device_d *dev)
+static int eqos_probe_ls1b(struct device_d *dev)
 {
-	return eqos_probe(dev, &stm32_ops, xzalloc(sizeof(struct eqos_stm32)));
+	return eqos_probe(dev, &ls1b_ops, xzalloc(sizeof(struct eqos_ls1b)));
 }
 
-static void eqos_remove_stm32(struct device_d *dev)
+static void eqos_remove_ls1b(struct device_d *dev)
 {
-	struct eqos_stm32 *priv = to_stm32(dev->priv);
+	struct eqos_ls1b *priv = to_ls1b(dev->priv);
 
 	eqos_remove(dev);
 
@@ -199,15 +200,15 @@ static void eqos_remove_stm32(struct device_d *dev)
 	clk_bulk_put(priv->num_clks, priv->clks);
 }
 
-static const struct of_device_id eqos_stm32_ids[] = {
-	{ .compatible = "st,stm32mp1-dwmac" },
+static const struct of_device_id eqos_ls1b_ids[] = {
+	{ .compatible = "loongson,ls1b200-dwmac" },
 	{ /* sentinel */ }
 };
 
-static struct driver_d eqos_stm32_driver = {
-	.name = "eqos-stm32",
-	.probe = eqos_probe_stm32,
-	.remove	= eqos_remove_stm32,
-	.of_compatible = DRV_OF_COMPAT(eqos_stm32_ids),
+static struct driver_d eqos_ls1b_driver = {
+	.name = "eqos-ls1b",
+	.probe = eqos_probe_ls1b,
+	.remove	= eqos_remove_ls1b,
+	.of_compatible = DRV_OF_COMPAT(eqos_ls1b_ids),
 };
-device_platform_driver(eqos_stm32_driver);
+device_platform_driver(eqos_ls1b_driver);
