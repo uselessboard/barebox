@@ -102,6 +102,12 @@ config DRIVER_NET_DESIGNWARE_STM32
 	help
 	  This option enables support for the ethernet MAC on the STM32MP platforms.
 
+config DRIVER_NET_DESIGNWARE_LS1B
+	bool "Designware EQOS LS1B driver"
+	select MFD_SYSCON
+	help
+	  This option enables support for the ethernet MAC on the LS1B platforms.
+
 config DRIVER_NET_DESIGNWARE_TEGRA186
 	bool "Designware Universal MAC ethernet driver for Tegra 186 platforms"
 	select RESET_CONTROLLER
