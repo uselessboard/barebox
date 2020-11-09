@@ -117,5 +117,6 @@ static inline void __raw_writel(u32 b, volatile void __iomem *addr)
 #endif
 
 #include <asm-generic/io.h>
+#include <asm-generic/bitio.h>
 
 #endif	/* __ASM_MIPS_IO_H */
