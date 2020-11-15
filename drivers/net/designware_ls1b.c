@@ -67,6 +67,7 @@ static const struct clk_bulk_data ls1b_clks[] = {
 
 static unsigned long eqos_get_csr_clk_rate_ls1b(struct eqos *eqos)
 {
+	return 0;
 	return clk_get_rate(to_ls1b(eqos)->clks[CLK_STMMACETH].clk);
 }
 
@@ -187,8 +188,10 @@ static struct eqos_ops ls1b_ops = {
 
 static int eqos_probe_ls1b(struct device_d *dev)
 {
+	pr_emerg("------------------------%s\n", __func__);
 	return eqos_probe(dev, &ls1b_ops, xzalloc(sizeof(struct eqos_ls1b)));
 }
+
 
 static void eqos_remove_ls1b(struct device_d *dev)
 {

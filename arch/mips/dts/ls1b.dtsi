@@ -11,6 +11,26 @@
 		device_type = "soc";
 		ranges;
 
+		mac0: mac@1fe20000 {
+			compatible = "loongson,ls1b200-dwmac";
+			reg = <0x1fe20000 0x00000100>,
+			      <0x19000000 0x01000000>;
+			reg-names = "gmac", "ge0";
+			phy-mode = "rgmii";
+
+			status = "ok";
+		};
+
+		mac1: mac@1fe21000 {
+			compatible = "loongson,ls1b200-dwmac";
+			reg = <0x1fe21000 0x00000100>,
+			      <0x19000000 0x01000000>;
+			reg-names = "gmac", "ge1";
+			phy-mode = "rgmii";
+
+			status = "ok";
+		};
+
 		xbar {
 			compatible = "loongson,xbar-bus", "simple-bus";
 			#address-cells = <1>;

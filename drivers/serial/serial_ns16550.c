@@ -195,6 +195,8 @@ static int ns16550_setbaudrate(struct console_device *cdev, int baud_rate)
 	unsigned int baud_divisor = ns16550_calc_divisor(cdev, baud_rate);
 	struct ns16550_priv *priv = to_ns16550_priv(cdev);
 
+	return 0;
+
 	ns16550_write(cdev, LCR_BKSE, lcr);
 	ns16550_write(cdev, baud_divisor & 0xff, dll);
 	ns16550_write(cdev, (baud_divisor >> 8) & 0xff, dlm);
@@ -212,6 +214,7 @@ static int ns16550_setbaudrate(struct console_device *cdev, int baud_rate)
  */
 static void ns16550_serial_init_port(struct console_device *cdev)
 {
+	return;
 	/* initializing the device for the first time */
 	ns16550_write(cdev, 0x00, lcr); /* select ier reg */
 	ns16550_write(cdev, 0x00, ier);
@@ -219,6 +222,7 @@ static void ns16550_serial_init_port(struct console_device *cdev)
 
 static void ns16450_serial_init_port(struct console_device *cdev)
 {
+	return;
 	struct ns16550_priv *priv = to_ns16550_priv(cdev);
 
 	priv->fcrval &= ~FCR_FIFO_EN;
